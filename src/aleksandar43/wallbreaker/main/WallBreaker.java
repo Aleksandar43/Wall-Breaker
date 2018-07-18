@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wallbreaker;
+package aleksandar43.wallbreaker.main;
 
+import aleksandar43.wallbreaker.gui.MenuText;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -12,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -44,6 +46,15 @@ public class WallBreaker extends Application {
         root.setAlignment(Pos.CENTER);
         root.getChildren().add(btn);
         root.getChildren().add(quitButton);
+        root.getChildren().add(new MenuText("Text 1"));
+        MenuText qm=new MenuText("Quit");
+        root.getChildren().add(qm);
+        qm.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                System.out.println("BOOM");
+            }
+        });
         
         Scene scene = new Scene(root, 800, 450);
         
