@@ -22,37 +22,23 @@ import javafx.stage.Stage;
  * @author Aleksandar
  */
 public class WallBreaker extends Application {
-    
+    VBox root;
     @Override
     public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
-        Button quitButton=new Button("QUIT");
-        quitButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Platform.exit();
-            }
-        });
-        
-        VBox root=new VBox();
+        root=new VBox();
         root.setAlignment(Pos.CENTER);
-        root.getChildren().add(btn);
-        root.getChildren().add(quitButton);
-        root.getChildren().add(new MenuText("Text 1"));
-        MenuText qm=new MenuText("Quit");
+        root.setStyle("-fx-background-color: black;");
+        root.getChildren().add(new MenuText("Pokreni igru"));
+        root.getChildren().add(new MenuText("Opcije"));
+        root.getChildren().add(new MenuText("Rang lista"));
+        root.getChildren().add(new MenuText("O igri"));
+        MenuText qm=new MenuText("Izađi");
         root.getChildren().add(qm);
         qm.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 System.out.println("BOOM");
+                Platform.exit();
             }
         });
         
