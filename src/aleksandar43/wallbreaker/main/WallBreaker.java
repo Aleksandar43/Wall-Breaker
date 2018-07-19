@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -19,6 +20,7 @@ import javafx.stage.Stage;
  */
 public class WallBreaker extends Application {
     private VBox mainMenu, optionsMenu;
+    private BorderPane aboutMenu;
     private boolean musicOn=true, soundEffectsOn=true;
     private StackPane menusStackPane;
     @Override
@@ -76,6 +78,12 @@ public class WallBreaker extends Application {
         });
         optionsMenu.getChildren().addAll(musicToggle,soundEffectsToggle,fullscreenToggle,backToMain);
         
+        aboutMenu=new BorderPane();
+        //backToMain exists
+        aboutMenu.setBottom(backToMain);
+        aboutMenu.setStyle("-fx-background-color: black");
+        BorderPane.setAlignment(backToMain, Pos.CENTER);
+        
         mainMenu=new VBox();
         mainMenu.setAlignment(Pos.CENTER);
         mainMenu.setStyle("-fx-background-color: black");
@@ -89,7 +97,14 @@ public class WallBreaker extends Application {
         });
         mainMenu.getChildren().add(goToOptions);
         mainMenu.getChildren().add(new MenuText("Rang lista"));
-        mainMenu.getChildren().add(new MenuText("O igri"));
+        MenuText goToAbout = new MenuText("O igri");
+        goToAbout.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                aboutMenu.toFront();
+            }
+        });
+        mainMenu.getChildren().add(goToAbout);
         MenuText qm=new MenuText("Izađi");
         mainMenu.getChildren().add(qm);
         qm.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -101,7 +116,7 @@ public class WallBreaker extends Application {
         });
         
         menusStackPane = new StackPane();
-        menusStackPane.getChildren().addAll(optionsMenu,mainMenu);
+        menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,mainMenu);
         Scene scene = new Scene(menusStackPane, 800, 450);
         
         primaryStage.setTitle("WallBreaker");
