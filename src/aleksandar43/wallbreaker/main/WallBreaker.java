@@ -12,6 +12,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Scale;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -19,6 +21,10 @@ import javafx.stage.Stage;
  * @author Aleksandar
  */
 public class WallBreaker extends Application {
+    public static double WINDOW_WIDTH=800;
+    public static double WINDOW_HEIGHT=450;
+    public static double FULLSCREEN_WIDTH=Screen.getPrimary().getBounds().getWidth();
+    public static double FULLSCREEN_HEIGHT=Screen.getPrimary().getBounds().getHeight();
     private VBox mainMenu, optionsMenu;
     private BorderPane aboutMenu, highScoresMenu;
     private boolean musicOn=true, soundEffectsOn=true;
@@ -27,7 +33,9 @@ public class WallBreaker extends Application {
     public void start(Stage primaryStage) {
         optionsMenu=new VBox();
         optionsMenu.setAlignment(Pos.CENTER);
-        optionsMenu.setStyle("-fx-background-color: black");
+        optionsMenu.setMaxWidth(WINDOW_WIDTH);
+        optionsMenu.setMaxHeight(WINDOW_HEIGHT);
+        optionsMenu.setStyle("-fx-background-color: black;-fx-border-color: red; -fx-border-width: 5");
         MenuText musicToggle=new MenuText("Muzika: uklj.");
         musicToggle.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -63,9 +71,13 @@ public class WallBreaker extends Application {
                 if(primaryStage.isFullScreen()){
                     primaryStage.setFullScreen(false);
                     fullscreenToggle.setText("Pređi na ceo ekran");
+                    menusStackPane.getTransforms().clear();
                 } else{
                     primaryStage.setFullScreen(true);
                     fullscreenToggle.setText("Pređi na prozor");
+                    menusStackPane.getTransforms().addAll(
+                            new Scale(FULLSCREEN_WIDTH/WINDOW_WIDTH, FULLSCREEN_HEIGHT/WINDOW_HEIGHT, FULLSCREEN_WIDTH/2, FULLSCREEN_HEIGHT/2)
+                    );
                 }
             }
         });
@@ -79,6 +91,9 @@ public class WallBreaker extends Application {
         optionsMenu.getChildren().addAll(musicToggle,soundEffectsToggle,fullscreenToggle,backToMainOptions);
         
         aboutMenu=new BorderPane();
+        aboutMenu.setStyle("-fx-background-color: black; -fx-border-width: 1; -fx-border-color: grey");
+        aboutMenu.setMaxWidth(WINDOW_WIDTH);
+        aboutMenu.setMaxHeight(WINDOW_HEIGHT);
         MenuText backToMainAbout=new MenuText("Nazad");
         backToMainAbout.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -87,10 +102,12 @@ public class WallBreaker extends Application {
             }
         });
         aboutMenu.setBottom(backToMainAbout);
-        aboutMenu.setStyle("-fx-background-color: black");
         BorderPane.setAlignment(backToMainAbout, Pos.CENTER);
         
         highScoresMenu=new BorderPane();
+        highScoresMenu.setMaxWidth(WINDOW_WIDTH);
+        highScoresMenu.setMaxHeight(WINDOW_HEIGHT);
+        highScoresMenu.setStyle("-fx-background-color: darkgreen; -fx-border-width: 5; -fx-border-color: yellow");
         MenuText backToMainHighScores=new MenuText("Nazad");
         backToMainHighScores.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -99,12 +116,13 @@ public class WallBreaker extends Application {
             }
         });
         highScoresMenu.setBottom(backToMainHighScores);
-        highScoresMenu.setStyle("-fx-background-color: darkgreen");
         BorderPane.setAlignment(backToMainHighScores, Pos.CENTER);
         
         mainMenu=new VBox();
         mainMenu.setAlignment(Pos.CENTER);
-        mainMenu.setStyle("-fx-background-color: black");
+        mainMenu.setMaxWidth(WINDOW_WIDTH);
+        mainMenu.setMaxHeight(WINDOW_HEIGHT);
+        mainMenu.setStyle("-fx-background-color: darkblue; -fx-border-width: 5; -fx-border-color: yellow");
         mainMenu.getChildren().add(new MenuText("Pokreni igru"));
         MenuText goToOptions = new MenuText("Opcije");
         goToOptions.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -142,7 +160,7 @@ public class WallBreaker extends Application {
         
         menusStackPane = new StackPane();
         menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,mainMenu);
-        Scene scene = new Scene(menusStackPane, 800, 450);
+        Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         
         primaryStage.setTitle("WallBreaker");
         primaryStage.setScene(scene);
