@@ -20,7 +20,7 @@ import javafx.stage.Stage;
  */
 public class WallBreaker extends Application {
     private VBox mainMenu, optionsMenu;
-    private BorderPane aboutMenu;
+    private BorderPane aboutMenu, highScoresMenu;
     private boolean musicOn=true, soundEffectsOn=true;
     private StackPane menusStackPane;
     @Override
@@ -69,20 +69,38 @@ public class WallBreaker extends Application {
                 }
             }
         });
-        MenuText backToMain=new MenuText("Nazad");
-        backToMain.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        MenuText backToMainOptions=new MenuText("Nazad");
+        backToMainOptions.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 mainMenu.toFront();
             }
         });
-        optionsMenu.getChildren().addAll(musicToggle,soundEffectsToggle,fullscreenToggle,backToMain);
+        optionsMenu.getChildren().addAll(musicToggle,soundEffectsToggle,fullscreenToggle,backToMainOptions);
         
         aboutMenu=new BorderPane();
-        //backToMain exists
-        aboutMenu.setBottom(backToMain);
+        MenuText backToMainAbout=new MenuText("Nazad");
+        backToMainAbout.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                mainMenu.toFront();
+            }
+        });
+        aboutMenu.setBottom(backToMainAbout);
         aboutMenu.setStyle("-fx-background-color: black");
-        BorderPane.setAlignment(backToMain, Pos.CENTER);
+        BorderPane.setAlignment(backToMainAbout, Pos.CENTER);
+        
+        highScoresMenu=new BorderPane();
+        MenuText backToMainHighScores=new MenuText("Nazad");
+        backToMainHighScores.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                mainMenu.toFront();
+            }
+        });
+        highScoresMenu.setBottom(backToMainHighScores);
+        highScoresMenu.setStyle("-fx-background-color: darkgreen");
+        BorderPane.setAlignment(backToMainHighScores, Pos.CENTER);
         
         mainMenu=new VBox();
         mainMenu.setAlignment(Pos.CENTER);
@@ -96,7 +114,14 @@ public class WallBreaker extends Application {
             }
         });
         mainMenu.getChildren().add(goToOptions);
-        mainMenu.getChildren().add(new MenuText("Rang lista"));
+        MenuText goToHighScores = new MenuText("Rang lista");
+        goToHighScores.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                highScoresMenu.toFront();
+            }
+        });
+        mainMenu.getChildren().add(goToHighScores);
         MenuText goToAbout = new MenuText("O igri");
         goToAbout.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -116,7 +141,7 @@ public class WallBreaker extends Application {
         });
         
         menusStackPane = new StackPane();
-        menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,mainMenu);
+        menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,mainMenu);
         Scene scene = new Scene(menusStackPane, 800, 450);
         
         primaryStage.setTitle("WallBreaker");
