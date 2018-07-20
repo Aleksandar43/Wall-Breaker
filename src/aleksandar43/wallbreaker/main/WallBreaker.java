@@ -25,8 +25,8 @@ public class WallBreaker extends Application {
     public static double WINDOW_HEIGHT=450;
     public static double FULLSCREEN_WIDTH=Screen.getPrimary().getBounds().getWidth();
     public static double FULLSCREEN_HEIGHT=Screen.getPrimary().getBounds().getHeight();
-    private VBox mainMenu, optionsMenu;
-    private BorderPane aboutMenu, highScoresMenu;
+    private VBox mainMenu, optionsMenu, gameStats, pauseMenu;
+    private BorderPane aboutMenu, highScoresMenu, gamePane;
     private boolean musicOn=true, soundEffectsOn=true;
     private StackPane menusStackPane;
     @Override
@@ -118,12 +118,53 @@ public class WallBreaker extends Application {
         highScoresMenu.setBottom(backToMainHighScores);
         BorderPane.setAlignment(backToMainHighScores, Pos.CENTER);
         
+        pauseMenu=new VBox();
+        pauseMenu.setAlignment(Pos.CENTER);
+        pauseMenu.setStyle("-fx-background-color: rgba(0,0,255,0.5); -fx-border-width: 5; -fx-border-color: white");
+        MenuText backtoGame = new MenuText("Nastavi");
+        backtoGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                gamePane.toFront();
+            }
+        });
+        pauseMenu.getChildren().add(backtoGame);
+        MenuText exitToMain = new MenuText("Izađi");
+        exitToMain.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                mainMenu.toFront();
+            }
+        });
+        pauseMenu.getChildren().add(exitToMain);
+        
+        gameStats=new VBox();
+        gameStats.setStyle("-fx-background-color: pink; -fx-border-width: 5; -fx-border-color: white");
+        MenuText pause = new MenuText("Pauza");
+        pause.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                pauseMenu.toFront();
+            }
+        });
+        gameStats.getChildren().add(pause);
+        gamePane=new BorderPane();
+        gamePane.setStyle("-fx-background-color: brown;");
+        gamePane.setRight(gameStats);
+        
         mainMenu=new VBox();
         mainMenu.setAlignment(Pos.CENTER);
         mainMenu.setMaxWidth(WINDOW_WIDTH);
         mainMenu.setMaxHeight(WINDOW_HEIGHT);
         mainMenu.setStyle("-fx-background-color: darkblue; -fx-border-width: 5; -fx-border-color: yellow");
-        mainMenu.getChildren().add(new MenuText("Pokreni igru"));
+        MenuText startGame = new MenuText("Pokreni igru");
+        startGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                gamePane.toFront();
+            }
+        });
+        mainMenu.getChildren().add(startGame);
         MenuText goToOptions = new MenuText("Opcije");
         goToOptions.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -159,7 +200,7 @@ public class WallBreaker extends Application {
         });
         
         menusStackPane = new StackPane();
-        menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,mainMenu);
+        menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,gamePane,pauseMenu,mainMenu);
         Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         
         primaryStage.setTitle("WallBreaker");
