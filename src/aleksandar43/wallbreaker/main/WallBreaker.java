@@ -139,6 +139,7 @@ public class WallBreaker extends Application {
         pauseMenu.getChildren().add(exitToMain);
         
         gameStats=new VBox();
+        gameStats.setAlignment(Pos.CENTER);
         gameStats.setStyle("-fx-background-color: pink; -fx-border-width: 5; -fx-border-color: white");
         MenuText pause = new MenuText("Pauza");
         pause.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -149,6 +150,8 @@ public class WallBreaker extends Application {
         });
         gameStats.getChildren().add(pause);
         gamePane=new BorderPane();
+        gamePane.setMaxWidth(WINDOW_WIDTH);
+        gamePane.setMaxHeight(WINDOW_HEIGHT);
         gamePane.setStyle("-fx-background-color: brown;");
         gamePane.setRight(gameStats);
         
@@ -205,9 +208,12 @@ public class WallBreaker extends Application {
         
         primaryStage.setTitle("WallBreaker");
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.sizeToScene(); //because setResizable(false) enlarges the stage for some reason
         primaryStage.setFullScreenExitHint(null);
         primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         primaryStage.show();
+        System.out.println("Dimensions: "+scene.getWidth()+", "+scene.getHeight());
     }
 
     /**
