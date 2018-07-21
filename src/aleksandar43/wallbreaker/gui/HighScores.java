@@ -2,15 +2,13 @@
 package aleksandar43.wallbreaker.gui;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.util.Pair;
 
 /**
@@ -36,7 +34,7 @@ public class HighScores {
                 String line = reader.readLine();
                 while (line != null) {
                     //lines in format <points> <name>
-                    String[] split = line.split(" ", 1);
+                    String[] split = line.split(" ", 2);
                     scores.add(new Pair<>(split[1], Integer.parseInt(split[0])));
                     line = reader.readLine();
                 }
@@ -53,5 +51,15 @@ public class HighScores {
     
     public static void addHighScore(){
         
+    }
+    
+    public static void saveHighScores(){
+        try (PrintWriter writer=new PrintWriter(new FileWriter("highscores.dat"))) {
+            for(Pair<String, Integer> p:scores){
+                writer.println(p.getValue()+" "+p.getKey());
+            }
+        } catch (IOException ex) {
+            System.err.println("Error while writing highscores");
+        }
     }
 }

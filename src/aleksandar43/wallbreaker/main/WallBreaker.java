@@ -122,7 +122,7 @@ public class WallBreaker extends Application {
         BorderPane.setAlignment(backToMainHighScores, Pos.CENTER);
         VBox scores=new VBox();
         List<Pair<String, Integer>> highScores = HighScores.getHighScores();
-        for(Pair p:highScores){
+        for(Pair<String, Integer> p:highScores){
             scores.getChildren().add(new MenuText(p.getKey()+" "+p.getValue()));
         }
         highScoresMenu.setCenter(scores);
@@ -207,6 +207,8 @@ public class WallBreaker extends Application {
             @Override
             public void handle(MouseEvent event) {
                 System.out.println("BOOM");
+                //temporary, should be saved after a game
+                HighScores.saveHighScores();
                 Platform.exit();
             }
         });
