@@ -1,7 +1,9 @@
 /* */
 package aleksandar43.wallbreaker.main;
 
+import aleksandar43.wallbreaker.gui.HighScores;
 import aleksandar43.wallbreaker.gui.MenuText;
+import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -15,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 /**
  *
@@ -117,6 +120,12 @@ public class WallBreaker extends Application {
         });
         highScoresMenu.setBottom(backToMainHighScores);
         BorderPane.setAlignment(backToMainHighScores, Pos.CENTER);
+        VBox scores=new VBox();
+        List<Pair<String, Integer>> highScores = HighScores.getHighScores();
+        for(Pair p:highScores){
+            scores.getChildren().add(new MenuText(p.getKey()+" "+p.getValue()));
+        }
+        highScoresMenu.setCenter(scores);
         
         pauseMenu=new VBox();
         pauseMenu.setAlignment(Pos.CENTER);
@@ -137,7 +146,7 @@ public class WallBreaker extends Application {
             }
         });
         pauseMenu.getChildren().add(exitToMain);
-        
+        //make some playground here
         gameStats=new VBox();
         gameStats.setAlignment(Pos.CENTER);
         gameStats.setStyle("-fx-background-color: pink; -fx-border-width: 5; -fx-border-color: white");
@@ -213,7 +222,9 @@ public class WallBreaker extends Application {
         primaryStage.setFullScreenExitHint(null);
         primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         primaryStage.show();
+        
         System.out.println("Dimensions: "+scene.getWidth()+", "+scene.getHeight());
+        System.out.println("Highscores: "+HighScores.getHighScores());
     }
 
     /**
