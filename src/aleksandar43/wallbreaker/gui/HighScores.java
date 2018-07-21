@@ -24,7 +24,7 @@ public class HighScores {
         defaultHighScores.add(new Pair<>("Mika", 100));
         defaultHighScores.add(new Pair<>("Rika", 90));
         defaultHighScores.add(new Pair<>("Lika", 80));
-        defaultHighScores.add(new Pair<>("Dika", null));
+        defaultHighScores.add(new Pair<>("Dika", 70));
     }
     
     public static List<Pair<String, Integer>> getHighScores(){
@@ -41,8 +41,8 @@ public class HighScores {
             } catch (FileNotFoundException ex) {
                 System.err.println("Highscores not found, using default");
                 scores = defaultHighScores;
-            } catch (IOException ex) {
-                System.err.println("Error while reading highscores, using default");
+            } catch (Exception ex) {
+                System.err.println("Error while reading highscores:\n\t"+ex.toString()+"\nUsing default highscores");
                 scores = defaultHighScores;
             }
         }
