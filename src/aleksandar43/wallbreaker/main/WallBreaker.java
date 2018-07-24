@@ -77,17 +77,17 @@ public class WallBreaker extends Application {
                 soundEffectsOn=!soundEffectsOn;
             }
         });
-        MenuText fullscreenToggle=new MenuText("Pređi na ceo ekran");
+        MenuText fullscreenToggle=new MenuText("Pređi na ceo ekran".toUpperCase());
         fullscreenToggle.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 if(primaryStage.isFullScreen()){
                     primaryStage.setFullScreen(false);
-                    fullscreenToggle.setText("Pređi na ceo ekran");
+                    fullscreenToggle.setText("Pređi na ceo ekran".toUpperCase());
                     menusStackPane.getTransforms().clear();
                 } else{
                     primaryStage.setFullScreen(true);
-                    fullscreenToggle.setText("Pređi na prozor");
+                    fullscreenToggle.setText("Pređi na prozor".toUpperCase());
                     menusStackPane.getTransforms().addAll(
                             new Scale(FULLSCREEN_WIDTH/WINDOW_WIDTH, FULLSCREEN_HEIGHT/WINDOW_HEIGHT, FULLSCREEN_WIDTH/2, FULLSCREEN_HEIGHT/2)
                     );
