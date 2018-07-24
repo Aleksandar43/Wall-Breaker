@@ -1,6 +1,7 @@
 /* */
 package aleksandar43.wallbreaker.main;
 
+import aleksandar43.wallbreaker.game.Paddle;
 import aleksandar43.wallbreaker.gui.HighScores;
 import aleksandar43.wallbreaker.gui.MenuText;
 import java.util.List;
@@ -8,12 +9,19 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -30,8 +38,10 @@ public class WallBreaker extends Application {
     public static double FULLSCREEN_HEIGHT=Screen.getPrimary().getBounds().getHeight();
     private VBox mainMenu, optionsMenu, gameStats, pauseMenu;
     private BorderPane aboutMenu, highScoresMenu, gamePane;
+    private Group playground;
     private boolean musicOn=true, soundEffectsOn=true;
     private StackPane menusStackPane;
+    private Paddle paddle;
     @Override
     public void start(Stage primaryStage) {
         optionsMenu=new VBox();
@@ -146,10 +156,18 @@ public class WallBreaker extends Application {
             }
         });
         pauseMenu.getChildren().add(exitToMain);
-        //make some playground here
+        
         gameStats=new VBox();
-        gameStats.setAlignment(Pos.CENTER);
+        gameStats.setAlignment(Pos.TOP_RIGHT);
+        gameStats.setPrefWidth(250);
+        gameStats.setPrefHeight(WINDOW_HEIGHT);
         gameStats.setStyle("-fx-background-color: pink; -fx-border-width: 5; -fx-border-color: white");
+        gameStats.getChildren().add(new Text("Poeni"));
+        gameStats.getChildren().add(new Text("0"));
+        gameStats.getChildren().add(new Text("Vreme"));
+        gameStats.getChildren().add(new Text("0:00:00"));
+        gameStats.getChildren().add(new Text("Životi"));
+        gameStats.getChildren().add(new Text("0"));
         MenuText pause = new MenuText("Pauza");
         pause.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -158,11 +176,20 @@ public class WallBreaker extends Application {
             }
         });
         gameStats.getChildren().add(pause);
+        
+        playground=new Group();
+        Rectangle temp=new Rectangle(0, 0, WINDOW_WIDTH-gameStats.getPrefWidth(), WINDOW_HEIGHT);
+        temp.setFill(new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, new Stop(0, Color.WHITE), new Stop(1, Color.BLUE)));
+        playground.getChildren().add(temp);
+        paddle=new Paddle(0, WINDOW_HEIGHT*0.9);
+        playground.getChildren().add(paddle);
+        
         gamePane=new BorderPane();
         gamePane.setMaxWidth(WINDOW_WIDTH);
         gamePane.setMaxHeight(WINDOW_HEIGHT);
         gamePane.setStyle("-fx-background-color: brown;");
         gamePane.setRight(gameStats);
+        gamePane.setCenter(playground);
         
         mainMenu=new VBox();
         mainMenu.setAlignment(Pos.CENTER);
