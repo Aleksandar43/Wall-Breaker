@@ -39,7 +39,7 @@ public class WallBreaker extends Application {
     private VBox mainMenu, optionsMenu, gameStats, pauseMenu;
     private BorderPane aboutMenu, highScoresMenu, gamePane;
     private Group playground;
-    private boolean musicOn=true, soundEffectsOn=true;
+    private boolean musicOn=true, soundEffectsOn=true, inGame=false;
     private StackPane menusStackPane;
     private Paddle paddle;
     @Override
@@ -94,14 +94,18 @@ public class WallBreaker extends Application {
                 }
             }
         });
-        MenuText backToMainOptions=new MenuText("Nazad");
-        backToMainOptions.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        MenuText backOptions=new MenuText("Nazad");
+        backOptions.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                mainMenu.toFront();
+                if(inGame) {
+                    gamePane.toFront(); //now PauseMenu is always in front of the game, maybe these could be in their own StackPane
+                    pauseMenu.toFront();
+                }
+                else mainMenu.toFront();
             }
         });
-        optionsMenu.getChildren().addAll(musicToggle,soundEffectsToggle,fullscreenToggle,backToMainOptions);
+        optionsMenu.getChildren().addAll(musicToggle,soundEffectsToggle,fullscreenToggle,backOptions);
         
         aboutMenu=new BorderPane();
         aboutMenu.setStyle("-fx-background-color: black; -fx-border-width: 1; -fx-border-color: grey");
@@ -148,10 +152,19 @@ public class WallBreaker extends Application {
             }
         });
         pauseMenu.getChildren().add(backtoGame);
+        MenuText goToOptionsPause = new MenuText("Opcije");
+        goToOptionsPause.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                optionsMenu.toFront();
+            }
+        });
+        pauseMenu.getChildren().add(goToOptionsPause);
         MenuText exitToMain = new MenuText("Izađi");
         exitToMain.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
+                inGame=false;
                 mainMenu.toFront();
             }
         });
@@ -200,6 +213,7 @@ public class WallBreaker extends Application {
         startGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
+                inGame=true;
                 gamePane.toFront();
             }
         });

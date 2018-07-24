@@ -9,7 +9,7 @@ import javafx.scene.shape.Rectangle;
  * @author Aleksandar
  */
 public class Paddle extends Group{
-    protected Rectangle rectangle;
+    protected Rectangle rectangle; //should be arc maybe
     public Paddle(double layoutX, double layoutY){
         rectangle = new Rectangle(layoutX, layoutY, 100, 25);
         getChildren().add(rectangle);

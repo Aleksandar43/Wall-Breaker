@@ -20,4 +20,13 @@ public class Brick extends Group{
     public void setType(String type) {
         this.type = type;
     }
+    
+    public void destroy(){
+        //???
+    }
+    
+    //default behaviour is to be destroyed
+    public void onHit(){
+        destroy();
+    }
 }
