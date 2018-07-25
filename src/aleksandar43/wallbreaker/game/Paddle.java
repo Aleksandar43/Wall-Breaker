@@ -2,17 +2,23 @@
 package aleksandar43.wallbreaker.game;
 
 import javafx.scene.Group;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcType;
 
 /**
  *
  * @author Aleksandar
  */
 public class Paddle extends Group{
-    protected Rectangle rectangle; //should be arc maybe
-    public Paddle(double layoutX, double layoutY){
-        rectangle = new Rectangle(layoutX, layoutY, 100, 25);
-        getChildren().add(rectangle);
+    protected Arc tempArc;
+    public Paddle(){
+        tempArc=new Arc(0, 0, 100, 100, 45, 90);
+        tempArc.setStrokeWidth(10);
+        tempArc.setFill(Color.RED);
+        tempArc.setStroke(Color.BLACK);
+        tempArc.setType(ArcType.OPEN);
+        getChildren().add(tempArc);
     }
     
     public void move( ){

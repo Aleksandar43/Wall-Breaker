@@ -194,7 +194,9 @@ public class WallBreaker extends Application {
         Rectangle temp=new Rectangle(0, 0, WINDOW_WIDTH-gameStats.getPrefWidth(), WINDOW_HEIGHT);
         temp.setFill(new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, new Stop(0, Color.WHITE), new Stop(1, Color.BLUE)));
         playground.getChildren().add(temp);
-        paddle=new Paddle(0, WINDOW_HEIGHT*0.9);
+        paddle=new Paddle();
+        paddle.setTranslateY(WINDOW_HEIGHT);
+        paddle.setTranslateX(WINDOW_WIDTH/2);
         playground.getChildren().add(paddle);
         
         gamePane=new BorderPane();
@@ -268,6 +270,8 @@ public class WallBreaker extends Application {
         
         System.out.println("Dimensions: "+scene.getWidth()+", "+scene.getHeight());
         System.out.println("Highscores: "+HighScores.getHighScores());
+        System.out.println("Paddle bounds: "+paddle.getBoundsInParent());
+
     }
 
     /**
