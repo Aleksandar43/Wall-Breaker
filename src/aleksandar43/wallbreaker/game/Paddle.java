@@ -1,6 +1,7 @@
 /* */
 package aleksandar43.wallbreaker.game;
 
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
@@ -21,7 +22,7 @@ public class Paddle extends Group{
         getChildren().add(tempArc);
     }
     
-    public void move(double mouseX){
-        setTranslateX(mouseX);
+    public void move(double mouseX, Bounds playgroundBounds, Bounds windowBounds){
+        setTranslateX(mouseX*(playgroundBounds.getMaxX()-playgroundBounds.getMinX())/(windowBounds.getMaxX()-windowBounds.getMinX()));
     }
 }

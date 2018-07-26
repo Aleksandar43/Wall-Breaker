@@ -269,10 +269,10 @@ public class WallBreaker extends Application {
         Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         
         //temporary trick, may add movement scaling
-        playground.setOnMouseMoved(new EventHandler<MouseEvent>() {
+        scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                paddle.move(event.getSceneX());
+                paddle.move(event.getSceneX(), temp.getBoundsInParent(), gameGroup.getBoundsInParent());
             }
         });
         
