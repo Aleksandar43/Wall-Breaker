@@ -282,8 +282,9 @@ public class WallBreaker extends Application {
         
         menusStackPane = new StackPane();
         menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,gameGroup,pauseMenu,mainMenu);
-        //temporary trick
-        menusStackPane.setAlignment(Pos.TOP_RIGHT); //now every menu goes top right at fullscreen
+        //temporary tricks
+        menusStackPane.setAlignment(Pos.CENTER);
+        StackPane.setAlignment(gameGroup, Pos.TOP_RIGHT);
         Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         
         scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
