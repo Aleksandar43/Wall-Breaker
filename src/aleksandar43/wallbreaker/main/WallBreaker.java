@@ -100,12 +100,14 @@ public class WallBreaker extends Application {
                     primaryStage.setFullScreen(false);
                     fullscreenToggle.setText("Pređi na ceo ekran".toUpperCase());
                     menusStackPane.getTransforms().clear();
+                    gameGroup.setTranslateX(0);
                 } else{
                     primaryStage.setFullScreen(true);
                     fullscreenToggle.setText("Pređi na prozor".toUpperCase());
                     menusStackPane.getTransforms().addAll(
                             new Scale(FULLSCREEN_WIDTH/WINDOW_WIDTH, FULLSCREEN_HEIGHT/WINDOW_HEIGHT, FULLSCREEN_WIDTH/2, FULLSCREEN_HEIGHT/2)
                     );
+                    gameGroup.setTranslateX(-283);
                 }
             }
         });
@@ -114,7 +116,7 @@ public class WallBreaker extends Application {
             @Override
             public void handle(MouseEvent event) {
                 if(inGame) {
-                    gamePane.toFront(); //now PauseMenu is always in front of the game, maybe these could be in their own StackPane
+                    gameGroup.toFront(); //now PauseMenu is always in front of the game, maybe these could be in their own StackPane
                     pauseMenu.toFront();
                 }
                 else mainMenu.toFront();
@@ -158,6 +160,8 @@ public class WallBreaker extends Application {
         
         pauseMenu=new VBox();
         pauseMenu.setAlignment(Pos.CENTER);
+        pauseMenu.setMaxWidth(WINDOW_WIDTH);
+        pauseMenu.setMaxHeight(WINDOW_HEIGHT);
         pauseMenu.setStyle("-fx-background-color: rgba(0,0,255,0.5); -fx-border-width: 5; -fx-border-color: white");
         MenuText backtoGame = new MenuText("Nastavi");
         backtoGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -185,6 +189,7 @@ public class WallBreaker extends Application {
         });
         pauseMenu.getChildren().add(exitToMain);
         
+        //make gameStats a Group
         gameStats=new VBox();
         gameStats.setAlignment(Pos.TOP_RIGHT);
         gameStats.setPrefWidth(250);
@@ -284,13 +289,17 @@ public class WallBreaker extends Application {
         menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,gameGroup,pauseMenu,mainMenu);
         //temporary tricks
         menusStackPane.setAlignment(Pos.CENTER);
-        StackPane.setAlignment(gameGroup, Pos.TOP_RIGHT);
+        StackPane.setAlignment(gameGroup, Pos.CENTER_RIGHT);
         Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         
         scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                paddle.move(event.getSceneX(), temp.getBoundsInParent(), gameGroup.getBoundsInParent());
+                if (primaryStage.isFullScreen()) {
+                    paddle.move(event.getSceneX(), FULLSCREEN_WIDTH, 0, temp.getWidth());
+                } else {
+                    paddle.move(event.getSceneX(), WINDOW_WIDTH, 0, temp.getWidth());
+                }
             }
         });
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -298,6 +307,9 @@ public class WallBreaker extends Application {
             public void handle(KeyEvent event) {
                 if(inGame && event.getCode().equals(KeyCode.ESCAPE)){ // && not already in pauseMenu
                     System.out.println("ESC key pressed");
+                    System.out.println(gameGroup.getBoundsInParent());
+                    System.out.println(pauseMenu.getBoundsInParent());
+                    System.out.println(mainMenu.getBoundsInParent());
                     pauseMenu.toFront();
                 }
             }

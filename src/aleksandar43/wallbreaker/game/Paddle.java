@@ -25,4 +25,7 @@ public class Paddle extends Group{
     public void move(double mouseX, Bounds playgroundBounds, Bounds windowBounds){
         setTranslateX(mouseX*(playgroundBounds.getMaxX()-playgroundBounds.getMinX())/(windowBounds.getMaxX()-windowBounds.getMinX()));
     }
+    public void move(double mouseX, double maxX, double limitLeft, double limitRight){
+        setTranslateX(mouseX/maxX*(limitRight-limitLeft)+limitLeft);
+    }
 }
