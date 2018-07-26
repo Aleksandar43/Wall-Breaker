@@ -1,17 +1,21 @@
 /* */
 package aleksandar43.wallbreaker.main;
 
+import aleksandar43.wallbreaker.game.Ball;
 import aleksandar43.wallbreaker.game.Paddle;
 import aleksandar43.wallbreaker.gui.HighScores;
 import aleksandar43.wallbreaker.gui.MenuText;
 import java.util.List;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -32,6 +36,16 @@ import javafx.util.Pair;
  * @author Aleksandar
  */
 public class WallBreaker extends Application {
+    
+    private class GameAnimationTimer extends AnimationTimer{
+
+        @Override
+        public void handle(long now) {
+            
+        }
+        
+    }
+    
     public static double WINDOW_WIDTH=800;
     public static double WINDOW_HEIGHT=450;
     public static double FULLSCREEN_WIDTH=Screen.getPrimary().getBounds().getWidth();
@@ -149,7 +163,7 @@ public class WallBreaker extends Application {
         backtoGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                gamePane.toFront();
+                gameGroup.toFront();
             }
         });
         pauseMenu.getChildren().add(backtoGame);
@@ -210,6 +224,10 @@ public class WallBreaker extends Application {
         gameGroup=new Group();
         gameGroup.getChildren().addAll(playground, gameStats);
         gameStats.setTranslateX(WINDOW_WIDTH-gameStats.getPrefWidth());
+        Ball b=new Ball(20, Color.YELLOW);
+        b.setTranslateX(20);
+        b.setTranslateY(20);
+        playground.getChildren().add(b);
         
         mainMenu=new VBox();
         mainMenu.setAlignment(Pos.CENTER);
@@ -265,14 +283,22 @@ public class WallBreaker extends Application {
         menusStackPane = new StackPane();
         menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,gameGroup,pauseMenu,mainMenu);
         //temporary trick
-        menusStackPane.setAlignment(Pos.TOP_RIGHT);
+        menusStackPane.setAlignment(Pos.TOP_RIGHT); //now every menu goes top right at fullscreen
         Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         
-        //temporary trick, may add movement scaling
         scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 paddle.move(event.getSceneX(), temp.getBoundsInParent(), gameGroup.getBoundsInParent());
+            }
+        });
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(inGame && event.getCode().equals(KeyCode.ESCAPE)){ // && not already in pauseMenu
+                    System.out.println("ESC key pressed");
+                    pauseMenu.toFront();
+                }
             }
         });
         
