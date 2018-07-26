@@ -38,6 +38,7 @@ public class WallBreaker extends Application {
     public static double FULLSCREEN_HEIGHT=Screen.getPrimary().getBounds().getHeight();
     private VBox mainMenu, optionsMenu, gameStats, pauseMenu;
     private BorderPane aboutMenu, highScoresMenu, gamePane;
+    private Group gameGroup;
     private Group playground;
     private boolean musicOn=true, soundEffectsOn=true, inGame=false;
     private StackPane menusStackPane;
@@ -206,6 +207,10 @@ public class WallBreaker extends Application {
         gamePane.setRight(gameStats);
         gamePane.setCenter(playground);
         
+        gameGroup=new Group();
+        gameGroup.getChildren().addAll(playground, gameStats);
+        gameStats.setTranslateX(WINDOW_WIDTH-gameStats.getPrefWidth());
+        
         mainMenu=new VBox();
         mainMenu.setAlignment(Pos.CENTER);
         mainMenu.setMaxWidth(WINDOW_WIDTH);
@@ -216,7 +221,8 @@ public class WallBreaker extends Application {
             @Override
             public void handle(MouseEvent event) {
                 inGame=true;
-                gamePane.toFront();
+                //gamePane.toFront();
+                gameGroup.toFront();
             }
         });
         mainMenu.getChildren().add(startGame);
@@ -257,8 +263,18 @@ public class WallBreaker extends Application {
         });
         
         menusStackPane = new StackPane();
-        menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,gamePane,pauseMenu,mainMenu);
+        menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,gameGroup,pauseMenu,mainMenu);
+        //temporary trick
+        menusStackPane.setAlignment(Pos.TOP_RIGHT);
         Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
+        
+        //temporary trick, may add movement scaling
+        playground.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                paddle.move(event.getSceneX());
+            }
+        });
         
         primaryStage.setTitle("WallBreaker");
         primaryStage.setScene(scene);

@@ -21,7 +21,7 @@ public class Paddle extends Group{
         getChildren().add(tempArc);
     }
     
-    public void move( ){
-    
+    public void move(double mouseX){
+        setTranslateX(mouseX);
     }
 }
