@@ -45,6 +45,11 @@ public class WallBreaker extends Application {
         public void handle(long now) {
             double deltaTime=(now-time)/1e9;
             if (inGame) { // & not paused
+                if (stage.isFullScreen()) {
+                    paddle.move(mouseX, FULLSCREEN_WIDTH, 0, WINDOW_WIDTH-gameStats.getPrefWidth());
+                } else {
+                    paddle.move(mouseX, WINDOW_WIDTH, 0, WINDOW_WIDTH-gameStats.getPrefWidth());
+                }
                 moveBall(firstBall, deltaTime, playground.getBoundsInLocal());
             }
             time=now;
@@ -72,6 +77,7 @@ public class WallBreaker extends Application {
         }
         if(Shape.intersect(b.getShape(), paddle.getShape()).getLayoutBounds().getWidth()>0){
             b.setAngle(Math.atan2(newY-(paddle.getShape().getCenterY()+paddle.getTranslateY())-25, newX-(paddle.getShape().getCenterX()+paddle.getTranslateX())));
+            //maybe set not to change angle until they are not in contact anymore
         }
         b.setTranslateX(newX);
         b.setTranslateY(newY);
@@ -90,8 +96,11 @@ public class WallBreaker extends Application {
     private Paddle paddle;
     private Ball firstBall;
     private GameAnimationTimer gameAnimationTimer;
+    private double mouseX, mouseY;
+    private Stage stage;
     @Override
     public void start(Stage primaryStage) {
+        stage=primaryStage;
         gameAnimationTimer=new GameAnimationTimer();
         
         optionsMenu=new VBox();
@@ -333,11 +342,13 @@ public class WallBreaker extends Application {
         scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (primaryStage.isFullScreen()) {
-                    paddle.move(event.getSceneX(), FULLSCREEN_WIDTH, 0, temp.getWidth());
-                } else {
-                    paddle.move(event.getSceneX(), WINDOW_WIDTH, 0, temp.getWidth());
-                }
+                mouseX=event.getSceneX();
+                mouseY=event.getSceneY();
+//                if (primaryStage.isFullScreen()) {
+//                    paddle.move(event.getSceneX(), FULLSCREEN_WIDTH, 0, temp.getWidth());
+//                } else {
+//                    paddle.move(event.getSceneX(), WINDOW_WIDTH, 0, temp.getWidth());
+//                }
             }
         });
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
