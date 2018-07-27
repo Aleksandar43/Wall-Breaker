@@ -33,4 +33,12 @@ public class Ball extends Group{
     public void setSpeedY(double speedY) {
         this.speedY = speedY;
     }
+    
+    public double getRadius(){
+        return circle.getRadius();
+    }
+    
+    public void setRadius(double r){
+        circle.setRadius(r);
+    }
 }

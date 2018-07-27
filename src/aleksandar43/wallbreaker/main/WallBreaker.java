@@ -10,6 +10,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -43,15 +44,33 @@ public class WallBreaker extends Application {
         public void handle(long now) {
             double deltaTime=(now-time)/1e9;
             if (inGame) { // & not paused
-                moveBall(firstBall, deltaTime);
+                moveBall(firstBall, deltaTime, playground.getBoundsInLocal());
             }
             time=now;
         }
     }
     
-    private void moveBall(Ball b, double deltaTime){
-        b.setTranslateX(b.getTranslateX()+b.getSpeedX()*deltaTime);
-        b.setTranslateY(b.getTranslateY()+b.getSpeedY()*deltaTime);
+    private void moveBall(Ball b, double deltaTime, Bounds bounds){
+        double newX = b.getTranslateX()+b.getSpeedX()*deltaTime;
+        double newY = b.getTranslateY()+b.getSpeedY()*deltaTime;
+        if(newX+b.getRadius()>bounds.getMaxX()){
+            b.setSpeedX(-b.getSpeedX());
+            newX=newX-((newX+b.getRadius())-bounds.getMaxX());
+        }
+        if(newX-b.getRadius()<bounds.getMinX()){
+            b.setSpeedX(-b.getSpeedX());
+            newX=newX+(bounds.getMinX()-(newX-b.getRadius()));
+        }
+        if(newY+b.getRadius()>bounds.getMaxY()){
+            b.setSpeedY(-b.getSpeedY());
+            newY=newY-((newY+b.getRadius())-bounds.getMaxY());
+        }
+        if(newY-b.getRadius()<bounds.getMinY()){
+            b.setSpeedY(-b.getSpeedY());
+            newY=newY+(bounds.getMinY()-(newY-b.getRadius()));
+        }
+        b.setTranslateX(newX);
+        b.setTranslateY(newY);
     }
     
     public static double WINDOW_WIDTH=800;
@@ -244,8 +263,8 @@ public class WallBreaker extends Application {
         firstBall=new Ball(20, Color.YELLOW);
         firstBall.setTranslateX(20);
         firstBall.setTranslateY(20);
-        firstBall.setSpeedX(10);
-        firstBall.setSpeedY(10);
+        firstBall.setSpeedX(120);
+        firstBall.setSpeedY(50);
         playground.getChildren().add(firstBall);
         
         mainMenu=new VBox();
