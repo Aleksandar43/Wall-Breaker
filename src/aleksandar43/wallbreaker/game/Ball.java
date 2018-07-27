@@ -41,4 +41,22 @@ public class Ball extends Group{
     public void setRadius(double r){
         circle.setRadius(r);
     }
+    
+    public double getSpeed(){
+        return Math.hypot(speedX, speedY);
+    }
+    
+    public double getAngle(){
+        return Math.atan2(speedY, speedX)*360/2*Math.PI;
+    }
+    
+    public void setAngle(double angle){
+        double speedM=getSpeed();
+        speedX=speedM*Math.cos(angle);
+        speedY=speedM*Math.sin(angle);
+    }
+    
+    public Circle getShape(){
+        return circle;
+    }
 }

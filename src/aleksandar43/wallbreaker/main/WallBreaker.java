@@ -26,6 +26,7 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
@@ -68,6 +69,9 @@ public class WallBreaker extends Application {
         if(newY-b.getRadius()<bounds.getMinY()){
             b.setSpeedY(-b.getSpeedY());
             newY=newY+(bounds.getMinY()-(newY-b.getRadius()));
+        }
+        if(Shape.intersect(b.getShape(), paddle.getShape()).getLayoutBounds().getWidth()>0){
+            b.setAngle(Math.atan2(newY-(paddle.getShape().getCenterY()+paddle.getTranslateY())-25, newX-(paddle.getShape().getCenterX()+paddle.getTranslateX())));
         }
         b.setTranslateX(newX);
         b.setTranslateY(newY);
@@ -248,6 +252,7 @@ public class WallBreaker extends Application {
         paddle=new Paddle();
         paddle.setTranslateY(WINDOW_HEIGHT);
         paddle.setTranslateX(WINDOW_WIDTH/2);
+        //wrap playground and paddle into a new group
         playground.getChildren().add(paddle);
         
         gamePane=new BorderPane();

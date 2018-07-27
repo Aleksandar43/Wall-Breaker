@@ -28,4 +28,8 @@ public class Paddle extends Group{
     public void move(double mouseX, double maxX, double limitLeft, double limitRight){
         setTranslateX(mouseX/maxX*(limitRight-limitLeft)+limitLeft);
     }
+    
+    public Arc getShape(){
+        return tempArc;
+    }
 }
