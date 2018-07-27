@@ -38,12 +38,20 @@ import javafx.util.Pair;
 public class WallBreaker extends Application {
     
     private class GameAnimationTimer extends AnimationTimer{
-
+        private long time;
         @Override
         public void handle(long now) {
-            
+            double deltaTime=(now-time)/1e9;
+            if (inGame) { // & not paused
+                moveBall(firstBall, deltaTime);
+            }
+            time=now;
         }
-        
+    }
+    
+    private void moveBall(Ball b, double deltaTime){
+        b.setTranslateX(b.getTranslateX()+b.getSpeedX()*deltaTime);
+        b.setTranslateY(b.getTranslateY()+b.getSpeedY()*deltaTime);
     }
     
     public static double WINDOW_WIDTH=800;
@@ -57,8 +65,12 @@ public class WallBreaker extends Application {
     private boolean musicOn=true, soundEffectsOn=true, inGame=false;
     private StackPane menusStackPane;
     private Paddle paddle;
+    private Ball firstBall;
+    private GameAnimationTimer gameAnimationTimer;
     @Override
     public void start(Stage primaryStage) {
+        gameAnimationTimer=new GameAnimationTimer();
+        
         optionsMenu=new VBox();
         optionsMenu.setAlignment(Pos.CENTER);
         optionsMenu.setMaxWidth(WINDOW_WIDTH);
@@ -229,10 +241,12 @@ public class WallBreaker extends Application {
         gameGroup=new Group();
         gameGroup.getChildren().addAll(playground, gameStats);
         gameStats.setTranslateX(WINDOW_WIDTH-gameStats.getPrefWidth());
-        Ball b=new Ball(20, Color.YELLOW);
-        b.setTranslateX(20);
-        b.setTranslateY(20);
-        playground.getChildren().add(b);
+        firstBall=new Ball(20, Color.YELLOW);
+        firstBall.setTranslateX(20);
+        firstBall.setTranslateY(20);
+        firstBall.setSpeedX(10);
+        firstBall.setSpeedY(10);
+        playground.getChildren().add(firstBall);
         
         mainMenu=new VBox();
         mainMenu.setAlignment(Pos.CENTER);
@@ -315,6 +329,7 @@ public class WallBreaker extends Application {
             }
         });
         
+        gameAnimationTimer.start();
         primaryStage.setTitle("WallBreaker");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
