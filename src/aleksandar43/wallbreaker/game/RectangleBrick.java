@@ -21,4 +21,9 @@ public class RectangleBrick extends Brick{
     public RectangleBrick(double x, double y, double width, double height){
         this(x, y, width, height, Color.BLACK);
     }
+
+    @Override
+    public Rectangle getShape() {
+        return rectangle;
+    }
 }

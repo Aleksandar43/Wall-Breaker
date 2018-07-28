@@ -2,6 +2,7 @@
 package aleksandar43.wallbreaker.game;
 
 import javafx.scene.Group;
+import javafx.scene.shape.Shape;
 
 /**
  *
@@ -28,5 +29,9 @@ public class Brick extends Group{
     //default behaviour is to be destroyed
     public void onHit(){
         destroy();
+    }
+    
+    public Shape getShape(){
+        return null;
     }
 }

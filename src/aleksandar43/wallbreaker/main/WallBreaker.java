@@ -2,9 +2,13 @@
 package aleksandar43.wallbreaker.main;
 
 import aleksandar43.wallbreaker.game.Ball;
+import aleksandar43.wallbreaker.game.Brick;
 import aleksandar43.wallbreaker.game.Paddle;
+import aleksandar43.wallbreaker.game.RectangleBrick;
 import aleksandar43.wallbreaker.gui.HighScores;
 import aleksandar43.wallbreaker.gui.MenuText;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -59,6 +63,7 @@ public class WallBreaker extends Application {
     private void moveBall(Ball b, double deltaTime, Bounds bounds){
         double newX = b.getTranslateX()+b.getSpeedX()*deltaTime;
         double newY = b.getTranslateY()+b.getSpeedY()*deltaTime;
+        boolean negateSpeedX=false, negateSpeedY=false;
         if(newX+b.getRadius()>bounds.getMaxX()){
             b.setSpeedX(-b.getSpeedX());
             newX=newX-((newX+b.getRadius())-bounds.getMaxX());
@@ -75,9 +80,37 @@ public class WallBreaker extends Application {
             b.setSpeedY(-b.getSpeedY());
             newY=newY+(bounds.getMinY()-(newY-b.getRadius()));
         }
+        for(Iterator<Brick> it=bricks.iterator(); it.hasNext();){
+            Brick brick=it.next();
+            Shape intersection=Shape.intersect(b.getShape(), brick.getShape());
+            if(intersection.getBoundsInLocal().getWidth() != -1){
+                it.remove();
+                playground.getChildren().remove(brick);
+                //case depending of type of block?
+                Bounds iBounds = intersection.getBoundsInParent();
+                if (intersection.getBoundsInLocal().getWidth() < intersection.getBoundsInLocal().getHeight()) {
+                    negateSpeedX = true;
+                    if(b.getSpeedX()>0){
+                        newX=(2*(iBounds.getMinX()-b.getShape().getRadius())-newX);
+                    } else {
+                        newX=(2*(iBounds.getMaxX()+b.getShape().getRadius())-newX);
+                    }
+                } else {
+                    negateSpeedY = true;
+                    if(b.getSpeedY()>0){
+                        newY=(2*(iBounds.getMinY()-b.getShape().getRadius())-newY);
+                    } else {
+                        newY=(2*(iBounds.getMaxY()+b.getShape().getRadius())-newY);
+                    }
+                }
+            }
+        }
         if(Shape.intersect(b.getShape(), paddle.getShape()).getLayoutBounds().getWidth()>0){
             b.setAngle(Math.atan2(newY-(paddle.getShape().getCenterY()+paddle.getTranslateY())-25, newX-(paddle.getShape().getCenterX()+paddle.getTranslateX())));
             //maybe set not to change angle until they are not in contact anymore
+        } else{
+            if(negateSpeedX) b.setSpeedX(-b.getSpeedX());
+            if(negateSpeedY) b.setSpeedY(-b.getSpeedY());
         }
         b.setTranslateX(newX);
         b.setTranslateY(newY);
@@ -98,6 +131,7 @@ public class WallBreaker extends Application {
     private GameAnimationTimer gameAnimationTimer;
     private double mouseX, mouseY;
     private Stage stage;
+    private List<Brick> bricks;
     @Override
     public void start(Stage primaryStage) {
         stage=primaryStage;
@@ -263,6 +297,12 @@ public class WallBreaker extends Application {
         paddle.setTranslateX(WINDOW_WIDTH/2);
         //wrap playground and paddle into a new group
         playground.getChildren().add(paddle);
+        bricks=new ArrayList<>();
+        for(int i=0;i<20;i++){
+            Brick b=new RectangleBrick(Math.random()*500, Math.random()*300, 30, 15, Color.RED);
+            bricks.add(b);
+            playground.getChildren().add(b);
+        }
         
         gamePane=new BorderPane();
         gamePane.setMaxWidth(WINDOW_WIDTH);
@@ -344,11 +384,6 @@ public class WallBreaker extends Application {
             public void handle(MouseEvent event) {
                 mouseX=event.getSceneX();
                 mouseY=event.getSceneY();
-//                if (primaryStage.isFullScreen()) {
-//                    paddle.move(event.getSceneX(), FULLSCREEN_WIDTH, 0, temp.getWidth());
-//                } else {
-//                    paddle.move(event.getSceneX(), WINDOW_WIDTH, 0, temp.getWidth());
-//                }
             }
         });
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
