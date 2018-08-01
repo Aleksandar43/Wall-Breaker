@@ -84,10 +84,18 @@ public class WallBreaker extends Application {
             Brick brick=it.next();
             Shape intersection=Shape.intersect(b.getShape(), brick.getShape());
             if(intersection.getBoundsInLocal().getWidth() != -1){
-                it.remove();
-                playground.getChildren().remove(brick);
+                //it.remove();
+                //playground.getChildren().remove(brick);
                 //case depending of type of block?
                 Bounds iBounds = intersection.getBoundsInParent();
+                System.out.println("Hit zone: "+iBounds);
+                System.out.println("Brick: "+brick.getShape().getBoundsInParent());
+                //iBounds going wild in fullscreen
+                System.out.println("iBounds: "+iBounds);
+                System.out.println("lBounds: "+intersection.getBoundsInLocal());
+                System.out.println("LBounds: "+intersection.getLayoutBounds());
+                System.out.println("Layout: "+intersection.getLayoutX()+", "+intersection.getLayoutY());
+                //make the correct algorithm!!!
                 if (intersection.getBoundsInLocal().getWidth() < intersection.getBoundsInLocal().getHeight()) {
                     negateSpeedX = true;
                     if(b.getSpeedX()>0){
@@ -298,11 +306,14 @@ public class WallBreaker extends Application {
         //wrap playground and paddle into a new group
         playground.getChildren().add(paddle);
         bricks=new ArrayList<>();
-        for(int i=0;i<20;i++){
-            Brick b=new RectangleBrick(Math.random()*500, Math.random()*300, 30, 15, Color.RED);
+        for(int i=0;i<1;i++){
+            Brick b=new RectangleBrick(Math.random()*500, Math.random()*450, 30, 15, Color.RED);
             bricks.add(b);
             playground.getChildren().add(b);
         }
+        Rectangle test=new Rectangle(100, 50, 75, 60);
+        test.setFill(Color.AZURE);
+        playground.getChildren().add(test);
         
         gamePane=new BorderPane();
         gamePane.setMaxWidth(WINDOW_WIDTH);
@@ -314,11 +325,11 @@ public class WallBreaker extends Application {
         gameGroup=new Group();
         gameGroup.getChildren().addAll(playground, gameStats);
         gameStats.setTranslateX(WINDOW_WIDTH-gameStats.getPrefWidth());
-        firstBall=new Ball(20, Color.YELLOW);
+        firstBall=new Ball(10, Color.YELLOW);
         firstBall.setTranslateX(20);
         firstBall.setTranslateY(20);
         firstBall.setSpeedX(120);
-        firstBall.setSpeedY(50);
+        firstBall.setSpeedY(-120);
         playground.getChildren().add(firstBall);
         
         mainMenu=new VBox();
@@ -394,6 +405,8 @@ public class WallBreaker extends Application {
                     System.out.println(gameGroup.getBoundsInParent());
                     System.out.println(pauseMenu.getBoundsInParent());
                     System.out.println(mainMenu.getBoundsInParent());
+                    System.out.println("Test rectangle bounds: "+test.getBoundsInParent());
+                    System.out.println("Test shape: "+test);
                     pauseMenu.toFront();
                 }
             }
@@ -411,7 +424,8 @@ public class WallBreaker extends Application {
         System.out.println("Dimensions: "+scene.getWidth()+", "+scene.getHeight());
         System.out.println("Highscores: "+HighScores.getHighScores());
         System.out.println("Paddle bounds: "+paddle.getBoundsInParent());
-
+        System.out.println("Stage x: "+primaryStage.getX());
+        System.out.println("Scene x: "+scene.getX());
     }
 
     /**

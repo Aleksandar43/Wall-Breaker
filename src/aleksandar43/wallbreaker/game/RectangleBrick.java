@@ -13,7 +13,9 @@ public class RectangleBrick extends Brick{
     protected Rectangle rectangle;
     public RectangleBrick(double x, double y, double width, double height, Paint fill){
         super("rectangle");
-        rectangle=new Rectangle(x, y, width, height);
+        rectangle=new Rectangle(width, height);
+        rectangle.setTranslateX(x);
+        rectangle.setTranslateY(y);
         rectangle.setFill(fill);
         getChildren().add(rectangle);
     }

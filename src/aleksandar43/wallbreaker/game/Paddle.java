@@ -14,7 +14,7 @@ import javafx.scene.shape.ArcType;
 public class Paddle extends Group{
     protected Arc tempArc;
     public Paddle(){
-        tempArc=new Arc(0, 0, 100, 100, 45, 90);
+        tempArc=new Arc(0, 0, 50, 50, 45, 90);
         tempArc.setStrokeWidth(10);
         tempArc.setFill(Color.RED);
         tempArc.setStroke(Color.BLACK);
