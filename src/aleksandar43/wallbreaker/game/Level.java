@@ -21,4 +21,21 @@ public class Level {
         this.name=name;
         bricks=new ArrayList<>();
     }
+    
+    public Level(){
+        this.name="New level";
+        bricks=new ArrayList<>();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Brick> getBricks() {
+        return bricks;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

@@ -175,7 +175,7 @@ public class WallBreaker extends Application {
         paddle.setTranslateY(WINDOW_HEIGHT);
         paddle.setTranslateX(WINDOW_WIDTH/2);
         //wrap playground and paddle into a new group
-        playground.getChildren().add(paddle);
+        //playground.getChildren().add(paddle);
         bricks=new ArrayList<>();
         for(int i=0;i<20;i++){
             Brick b=new RectangleBrick(Math.random()*500, Math.random()*300, 30, 15, Color.RED);
@@ -191,7 +191,7 @@ public class WallBreaker extends Application {
         gamePane.setCenter(playground);
         
         gameGroup=new Group();
-        gameGroup.getChildren().addAll(playground, gameStats);
+        gameGroup.getChildren().addAll(playground, paddle, gameStats);
         gameStats.setTranslateX(WINDOW_WIDTH-gameStats.getPrefWidth());
         firstBall=new Ball(10, Color.YELLOW);
         firstBall.setTranslateX(20);
