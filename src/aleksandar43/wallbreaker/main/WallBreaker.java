@@ -84,17 +84,13 @@ public class WallBreaker extends Application {
             Brick brick=it.next();
             Shape intersection=Shape.intersect(b.getShape(), brick.getShape());
             if(intersection.getBoundsInLocal().getWidth() != -1){
-                //it.remove();
-                //playground.getChildren().remove(brick);
+                it.remove();
+                playground.getChildren().remove(brick);
                 //case depending of type of block?
                 Bounds iBounds = intersection.getBoundsInParent();
                 System.out.println("Hit zone: "+iBounds);
                 System.out.println("Brick: "+brick.getShape().getBoundsInParent());
                 //iBounds going wild in fullscreen
-                System.out.println("iBounds: "+iBounds);
-                System.out.println("lBounds: "+intersection.getBoundsInLocal());
-                System.out.println("LBounds: "+intersection.getLayoutBounds());
-                System.out.println("Layout: "+intersection.getLayoutX()+", "+intersection.getLayoutY());
                 //make the correct algorithm!!!
                 if (intersection.getBoundsInLocal().getWidth() < intersection.getBoundsInLocal().getHeight()) {
                     negateSpeedX = true;
@@ -145,6 +141,111 @@ public class WallBreaker extends Application {
         stage=primaryStage;
         gameAnimationTimer=new GameAnimationTimer();
         
+        makeOptionsMenu(primaryStage);
+        makeAboutMenu();
+        makeHighScoresMenu();
+        makePauseMenu();
+        
+        //make gameStats a Group
+        gameStats=new VBox();
+        gameStats.setAlignment(Pos.TOP_RIGHT);
+        gameStats.setPrefWidth(250);
+        gameStats.setPrefHeight(WINDOW_HEIGHT);
+        gameStats.setStyle("-fx-background-color: pink; -fx-border-width: 5; -fx-border-color: white");
+        gameStats.getChildren().add(new Text("Poeni"));
+        gameStats.getChildren().add(new Text("0"));
+        gameStats.getChildren().add(new Text("Vreme"));
+        gameStats.getChildren().add(new Text("0:00:00"));
+        gameStats.getChildren().add(new Text("Životi"));
+        gameStats.getChildren().add(new Text("0"));
+        MenuText pause = new MenuText("Pauza");
+        pause.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                pauseMenu.toFront();
+            }
+        });
+        gameStats.getChildren().add(pause);
+        
+        playground=new Group();
+        Rectangle temp=new Rectangle(0, 0, WINDOW_WIDTH-gameStats.getPrefWidth(), WINDOW_HEIGHT);
+        temp.setFill(new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, new Stop(0, Color.WHITE), new Stop(1, Color.BLUE)));
+        playground.getChildren().add(temp);
+        paddle=new Paddle();
+        paddle.setTranslateY(WINDOW_HEIGHT);
+        paddle.setTranslateX(WINDOW_WIDTH/2);
+        //wrap playground and paddle into a new group
+        playground.getChildren().add(paddle);
+        bricks=new ArrayList<>();
+        for(int i=0;i<20;i++){
+            Brick b=new RectangleBrick(Math.random()*500, Math.random()*300, 30, 15, Color.RED);
+            bricks.add(b);
+            playground.getChildren().add(b);
+        }
+        
+        gamePane=new BorderPane();
+        gamePane.setMaxWidth(WINDOW_WIDTH);
+        gamePane.setMaxHeight(WINDOW_HEIGHT);
+        gamePane.setStyle("-fx-background-color: brown;");
+        gamePane.setRight(gameStats);
+        gamePane.setCenter(playground);
+        
+        gameGroup=new Group();
+        gameGroup.getChildren().addAll(playground, gameStats);
+        gameStats.setTranslateX(WINDOW_WIDTH-gameStats.getPrefWidth());
+        firstBall=new Ball(10, Color.YELLOW);
+        firstBall.setTranslateX(20);
+        firstBall.setTranslateY(20);
+        firstBall.setSpeedX(120);
+        firstBall.setSpeedY(-120);
+        playground.getChildren().add(firstBall);
+        
+        makeMainMenu();
+        
+        menusStackPane = new StackPane();
+        menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,gameGroup,pauseMenu,mainMenu);
+        //temporary tricks
+        menusStackPane.setAlignment(Pos.CENTER);
+        StackPane.setAlignment(gameGroup, Pos.CENTER_RIGHT);
+        Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
+        
+        scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                mouseX=event.getSceneX();
+                mouseY=event.getSceneY();
+            }
+        });
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(inGame && event.getCode().equals(KeyCode.ESCAPE)){ // && not already in pauseMenu
+                    System.out.println("ESC key pressed");
+                    System.out.println(gameGroup.getBoundsInParent());
+                    System.out.println(pauseMenu.getBoundsInParent());
+                    System.out.println(mainMenu.getBoundsInParent());
+                    pauseMenu.toFront();
+                }
+            }
+        });
+        
+        gameAnimationTimer.start();
+        primaryStage.setTitle("WallBreaker");
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.sizeToScene(); //because setResizable(false) enlarges the stage for some reason
+        primaryStage.setFullScreenExitHint(null);
+        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+        primaryStage.show();
+        
+        System.out.println("Dimensions: "+scene.getWidth()+", "+scene.getHeight());
+        System.out.println("Highscores: "+HighScores.getHighScores());
+        System.out.println("Paddle bounds: "+paddle.getBoundsInParent());
+        System.out.println("Stage x: "+primaryStage.getX());
+        System.out.println("Scene x: "+scene.getX());
+    }
+
+    private void makeOptionsMenu(Stage primaryStage) {
         optionsMenu=new VBox();
         optionsMenu.setAlignment(Pos.CENTER);
         optionsMenu.setMaxWidth(WINDOW_WIDTH);
@@ -209,7 +310,9 @@ public class WallBreaker extends Application {
             }
         });
         optionsMenu.getChildren().addAll(musicToggle,soundEffectsToggle,fullscreenToggle,backOptions);
-        
+    }
+
+    private void makeAboutMenu() {
         aboutMenu=new BorderPane();
         aboutMenu.setStyle("-fx-background-color: black; -fx-border-width: 1; -fx-border-color: grey");
         aboutMenu.setMaxWidth(WINDOW_WIDTH);
@@ -223,7 +326,9 @@ public class WallBreaker extends Application {
         });
         aboutMenu.setBottom(backToMainAbout);
         BorderPane.setAlignment(backToMainAbout, Pos.CENTER);
-        
+    }
+
+    private void makeHighScoresMenu() {
         highScoresMenu=new BorderPane();
         highScoresMenu.setMaxWidth(WINDOW_WIDTH);
         highScoresMenu.setMaxHeight(WINDOW_HEIGHT);
@@ -243,7 +348,9 @@ public class WallBreaker extends Application {
             scores.getChildren().add(new MenuText(p.getKey()+" "+p.getValue()));
         }
         highScoresMenu.setCenter(scores);
-        
+    }
+
+    private void makePauseMenu() {
         pauseMenu=new VBox();
         pauseMenu.setAlignment(Pos.CENTER);
         pauseMenu.setMaxWidth(WINDOW_WIDTH);
@@ -274,64 +381,9 @@ public class WallBreaker extends Application {
             }
         });
         pauseMenu.getChildren().add(exitToMain);
-        
-        //make gameStats a Group
-        gameStats=new VBox();
-        gameStats.setAlignment(Pos.TOP_RIGHT);
-        gameStats.setPrefWidth(250);
-        gameStats.setPrefHeight(WINDOW_HEIGHT);
-        gameStats.setStyle("-fx-background-color: pink; -fx-border-width: 5; -fx-border-color: white");
-        gameStats.getChildren().add(new Text("Poeni"));
-        gameStats.getChildren().add(new Text("0"));
-        gameStats.getChildren().add(new Text("Vreme"));
-        gameStats.getChildren().add(new Text("0:00:00"));
-        gameStats.getChildren().add(new Text("Životi"));
-        gameStats.getChildren().add(new Text("0"));
-        MenuText pause = new MenuText("Pauza");
-        pause.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                pauseMenu.toFront();
-            }
-        });
-        gameStats.getChildren().add(pause);
-        
-        playground=new Group();
-        Rectangle temp=new Rectangle(0, 0, WINDOW_WIDTH-gameStats.getPrefWidth(), WINDOW_HEIGHT);
-        temp.setFill(new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, new Stop(0, Color.WHITE), new Stop(1, Color.BLUE)));
-        playground.getChildren().add(temp);
-        paddle=new Paddle();
-        paddle.setTranslateY(WINDOW_HEIGHT);
-        paddle.setTranslateX(WINDOW_WIDTH/2);
-        //wrap playground and paddle into a new group
-        playground.getChildren().add(paddle);
-        bricks=new ArrayList<>();
-        for(int i=0;i<1;i++){
-            Brick b=new RectangleBrick(Math.random()*500, Math.random()*450, 30, 15, Color.RED);
-            bricks.add(b);
-            playground.getChildren().add(b);
-        }
-        Rectangle test=new Rectangle(100, 50, 75, 60);
-        test.setFill(Color.AZURE);
-        playground.getChildren().add(test);
-        
-        gamePane=new BorderPane();
-        gamePane.setMaxWidth(WINDOW_WIDTH);
-        gamePane.setMaxHeight(WINDOW_HEIGHT);
-        gamePane.setStyle("-fx-background-color: brown;");
-        gamePane.setRight(gameStats);
-        gamePane.setCenter(playground);
-        
-        gameGroup=new Group();
-        gameGroup.getChildren().addAll(playground, gameStats);
-        gameStats.setTranslateX(WINDOW_WIDTH-gameStats.getPrefWidth());
-        firstBall=new Ball(10, Color.YELLOW);
-        firstBall.setTranslateX(20);
-        firstBall.setTranslateY(20);
-        firstBall.setSpeedX(120);
-        firstBall.setSpeedY(-120);
-        playground.getChildren().add(firstBall);
-        
+    }
+
+    private void makeMainMenu() {
         mainMenu=new VBox();
         mainMenu.setAlignment(Pos.CENTER);
         mainMenu.setMaxWidth(WINDOW_WIDTH);
@@ -382,50 +434,6 @@ public class WallBreaker extends Application {
                 Platform.exit();
             }
         });
-        
-        menusStackPane = new StackPane();
-        menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,gameGroup,pauseMenu,mainMenu);
-        //temporary tricks
-        menusStackPane.setAlignment(Pos.CENTER);
-        StackPane.setAlignment(gameGroup, Pos.CENTER_RIGHT);
-        Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
-        
-        scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                mouseX=event.getSceneX();
-                mouseY=event.getSceneY();
-            }
-        });
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if(inGame && event.getCode().equals(KeyCode.ESCAPE)){ // && not already in pauseMenu
-                    System.out.println("ESC key pressed");
-                    System.out.println(gameGroup.getBoundsInParent());
-                    System.out.println(pauseMenu.getBoundsInParent());
-                    System.out.println(mainMenu.getBoundsInParent());
-                    System.out.println("Test rectangle bounds: "+test.getBoundsInParent());
-                    System.out.println("Test shape: "+test);
-                    pauseMenu.toFront();
-                }
-            }
-        });
-        
-        gameAnimationTimer.start();
-        primaryStage.setTitle("WallBreaker");
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.sizeToScene(); //because setResizable(false) enlarges the stage for some reason
-        primaryStage.setFullScreenExitHint(null);
-        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
-        primaryStage.show();
-        
-        System.out.println("Dimensions: "+scene.getWidth()+", "+scene.getHeight());
-        System.out.println("Highscores: "+HighScores.getHighScores());
-        System.out.println("Paddle bounds: "+paddle.getBoundsInParent());
-        System.out.println("Stage x: "+primaryStage.getX());
-        System.out.println("Scene x: "+scene.getX());
     }
 
     /**
