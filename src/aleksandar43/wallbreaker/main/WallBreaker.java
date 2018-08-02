@@ -129,7 +129,7 @@ public class WallBreaker extends Application {
     private Group gameGroup;
     private Group playground;
     private boolean musicOn=true, soundEffectsOn=true, inGame=false;
-    private StackPane menusStackPane;
+    private Group menusStackPane;
     private Paddle paddle;
     private Ball firstBall;
     private GameAnimationTimer gameAnimationTimer;
@@ -175,7 +175,7 @@ public class WallBreaker extends Application {
         paddle.setTranslateY(WINDOW_HEIGHT);
         paddle.setTranslateX(WINDOW_WIDTH/2);
         //wrap playground and paddle into a new group
-        //playground.getChildren().add(paddle);
+        playground.getChildren().add(paddle);
         bricks=new ArrayList<>();
         for(int i=0;i<20;i++){
             Brick b=new RectangleBrick(Math.random()*500, Math.random()*300, 30, 15, Color.RED);
@@ -191,7 +191,7 @@ public class WallBreaker extends Application {
         gamePane.setCenter(playground);
         
         gameGroup=new Group();
-        gameGroup.getChildren().addAll(playground, paddle, gameStats);
+        gameGroup.getChildren().addAll(playground, gameStats);
         gameStats.setTranslateX(WINDOW_WIDTH-gameStats.getPrefWidth());
         firstBall=new Ball(10, Color.YELLOW);
         firstBall.setTranslateX(20);
@@ -202,11 +202,8 @@ public class WallBreaker extends Application {
         
         makeMainMenu();
         
-        menusStackPane = new StackPane();
+        menusStackPane = new Group();
         menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,gameGroup,pauseMenu,mainMenu);
-        //temporary tricks
-        menusStackPane.setAlignment(Pos.CENTER);
-        StackPane.setAlignment(gameGroup, Pos.CENTER_RIGHT);
         Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         
         scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
@@ -250,6 +247,8 @@ public class WallBreaker extends Application {
         optionsMenu.setAlignment(Pos.CENTER);
         optionsMenu.setMaxWidth(WINDOW_WIDTH);
         optionsMenu.setMaxHeight(WINDOW_HEIGHT);
+        optionsMenu.setPrefWidth(WINDOW_WIDTH);
+        optionsMenu.setPrefHeight(WINDOW_HEIGHT);
         optionsMenu.setStyle("-fx-background-color: black;-fx-border-color: red; -fx-border-width: 5");
         MenuText musicToggle=new MenuText("Muzika: uklj.");
         musicToggle.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -287,14 +286,12 @@ public class WallBreaker extends Application {
                     primaryStage.setFullScreen(false);
                     fullscreenToggle.setText("Pređi na ceo ekran".toUpperCase());
                     menusStackPane.getTransforms().clear();
-                    gameGroup.setTranslateX(0);
                 } else{
                     primaryStage.setFullScreen(true);
                     fullscreenToggle.setText("Pređi na prozor".toUpperCase());
                     menusStackPane.getTransforms().addAll(
-                            new Scale(FULLSCREEN_WIDTH/WINDOW_WIDTH, FULLSCREEN_HEIGHT/WINDOW_HEIGHT, FULLSCREEN_WIDTH/2, FULLSCREEN_HEIGHT/2)
+                            new Scale(FULLSCREEN_WIDTH/WINDOW_WIDTH, FULLSCREEN_HEIGHT/WINDOW_HEIGHT, 0, 0)
                     );
-                    gameGroup.setTranslateX(-283);
                 }
             }
         });
@@ -317,6 +314,8 @@ public class WallBreaker extends Application {
         aboutMenu.setStyle("-fx-background-color: black; -fx-border-width: 1; -fx-border-color: grey");
         aboutMenu.setMaxWidth(WINDOW_WIDTH);
         aboutMenu.setMaxHeight(WINDOW_HEIGHT);
+        aboutMenu.setPrefWidth(WINDOW_WIDTH);
+        aboutMenu.setPrefHeight(WINDOW_HEIGHT);
         MenuText backToMainAbout=new MenuText("Nazad");
         backToMainAbout.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -332,6 +331,8 @@ public class WallBreaker extends Application {
         highScoresMenu=new BorderPane();
         highScoresMenu.setMaxWidth(WINDOW_WIDTH);
         highScoresMenu.setMaxHeight(WINDOW_HEIGHT);
+        highScoresMenu.setPrefWidth(WINDOW_WIDTH);
+        highScoresMenu.setPrefHeight(WINDOW_HEIGHT);
         highScoresMenu.setStyle("-fx-background-color: darkgreen; -fx-border-width: 5; -fx-border-color: yellow");
         MenuText backToMainHighScores=new MenuText("Nazad");
         backToMainHighScores.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -355,6 +356,8 @@ public class WallBreaker extends Application {
         pauseMenu.setAlignment(Pos.CENTER);
         pauseMenu.setMaxWidth(WINDOW_WIDTH);
         pauseMenu.setMaxHeight(WINDOW_HEIGHT);
+        pauseMenu.setPrefWidth(WINDOW_WIDTH);
+        pauseMenu.setPrefHeight(WINDOW_HEIGHT);
         pauseMenu.setStyle("-fx-background-color: rgba(0,0,255,0.5); -fx-border-width: 5; -fx-border-color: white");
         MenuText backtoGame = new MenuText("Nastavi");
         backtoGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -388,6 +391,8 @@ public class WallBreaker extends Application {
         mainMenu.setAlignment(Pos.CENTER);
         mainMenu.setMaxWidth(WINDOW_WIDTH);
         mainMenu.setMaxHeight(WINDOW_HEIGHT);
+        mainMenu.setPrefWidth(WINDOW_WIDTH);
+        mainMenu.setPrefHeight(WINDOW_HEIGHT);
         mainMenu.setStyle("-fx-background-color: darkblue; -fx-border-width: 5; -fx-border-color: yellow");
         MenuText startGame = new MenuText("Pokreni igru");
         startGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
