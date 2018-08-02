@@ -23,7 +23,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -48,7 +47,7 @@ public class WallBreaker extends Application {
         @Override
         public void handle(long now) {
             double deltaTime=(now-time)/1e9;
-            if (inGame) { // & not paused
+            if (inGame && !paused) {
                 if (stage.isFullScreen()) {
                     paddle.move(mouseX, FULLSCREEN_WIDTH, 0, WINDOW_WIDTH-gameStats.getPrefWidth());
                 } else {
@@ -128,7 +127,7 @@ public class WallBreaker extends Application {
     private BorderPane aboutMenu, highScoresMenu, gamePane;
     private Group gameGroup;
     private Group playground;
-    private boolean musicOn=true, soundEffectsOn=true, inGame=false;
+    private boolean musicOn=true, soundEffectsOn=true, inGame=false, paused=false;
     private Group menusStackPane;
     private Paddle paddle;
     private Ball firstBall;
@@ -162,6 +161,7 @@ public class WallBreaker extends Application {
         pause.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
+                paused=true;
                 pauseMenu.toFront();
             }
         });
@@ -216,11 +216,12 @@ public class WallBreaker extends Application {
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(inGame && event.getCode().equals(KeyCode.ESCAPE)){ // && not already in pauseMenu
+                if(inGame && event.getCode().equals(KeyCode.ESCAPE) && !paused){
                     System.out.println("ESC key pressed");
                     System.out.println(gameGroup.getBoundsInParent());
                     System.out.println(pauseMenu.getBoundsInParent());
                     System.out.println(mainMenu.getBoundsInParent());
+                    paused=true;
                     pauseMenu.toFront();
                 }
             }
@@ -299,8 +300,8 @@ public class WallBreaker extends Application {
         backOptions.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if(inGame) {
-                    gameGroup.toFront(); //now PauseMenu is always in front of the game, maybe these could be in their own StackPane
+                if(paused) {
+                    gameGroup.toFront(); //now PauseMenu is always in front of the game, maybe these could be in their own Group
                     pauseMenu.toFront();
                 }
                 else mainMenu.toFront();
@@ -363,6 +364,7 @@ public class WallBreaker extends Application {
         backtoGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
+                paused=false;
                 gameGroup.toFront();
             }
         });
@@ -380,6 +382,7 @@ public class WallBreaker extends Application {
             @Override
             public void handle(MouseEvent event) {
                 inGame=false;
+                paused=false;
                 mainMenu.toFront();
             }
         });
