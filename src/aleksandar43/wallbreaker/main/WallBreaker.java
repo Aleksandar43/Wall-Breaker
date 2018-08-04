@@ -29,7 +29,6 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
@@ -103,8 +102,8 @@ public class WallBreaker extends Application {
             }
             //if hit guaranteed, update ball position according to what axis hit first
             if(keepChecking){
-                double ratioX = minMovementX/Math.abs(movementX);
-                double ratioY = minMovementY/Math.abs(movementY);
+                double ratioX = movementX!=0 ? minMovementX/Math.abs(movementX) : Double.MAX_VALUE;
+                double ratioY = movementY!=0 ? minMovementY/Math.abs(movementY) : Double.MAX_VALUE;
                 if(ratioX < ratioY){
                     currentBallX+=movementX*ratioX;
                     currentBallY+=movementY*ratioX;
@@ -207,7 +206,7 @@ public class WallBreaker extends Application {
         firstBall.setTranslateX(20);
         firstBall.setTranslateY(20);
         firstBall.setSpeedX(120);
-        firstBall.setSpeedY(-120);
+        firstBall.setSpeedY(80);
         playground.getChildren().add(firstBall);
         
         makeMainMenu();
