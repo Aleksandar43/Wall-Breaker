@@ -46,7 +46,8 @@ public class WallBreaker extends Application {
         private long time;
         @Override
         public void handle(long now) {
-            double deltaTime=(now-time)/1e9;
+            //change for debugging
+            double deltaTime=Math.min((now-time)/1e9, 0.2);
             if (inGame && !paused) {
                 if (stage.isFullScreen()) {
                     paddle.move(mouseX, FULLSCREEN_WIDTH, 0, WINDOW_WIDTH-gameStats.getPrefWidth());
@@ -60,63 +61,72 @@ public class WallBreaker extends Application {
     }
     
     private void moveBall(Ball b, double deltaTime, Bounds bounds){
-        double newX = b.getTranslateX()+b.getSpeedX()*deltaTime;
-        double newY = b.getTranslateY()+b.getSpeedY()*deltaTime;
-        boolean negateSpeedX=false, negateSpeedY=false;
-        if(newX+b.getRadius()>bounds.getMaxX()){
-            b.setSpeedX(-b.getSpeedX());
-            newX=newX-((newX+b.getRadius())-bounds.getMaxX());
-        }
-        if(newX-b.getRadius()<bounds.getMinX()){
-            b.setSpeedX(-b.getSpeedX());
-            newX=newX+(bounds.getMinX()-(newX-b.getRadius()));
-        }
-        if(newY+b.getRadius()>bounds.getMaxY()){
-            b.setSpeedY(-b.getSpeedY());
-            newY=newY-((newY+b.getRadius())-bounds.getMaxY());
-        }
-        if(newY-b.getRadius()<bounds.getMinY()){
-            b.setSpeedY(-b.getSpeedY());
-            newY=newY+(bounds.getMinY()-(newY-b.getRadius()));
-        }
-        for(Iterator<Brick> it=bricks.iterator(); it.hasNext();){
-            Brick brick=it.next();
-            Shape intersection=Shape.intersect(b.getShape(), brick.getShape());
-            if(intersection.getBoundsInLocal().getWidth() != -1){
-                it.remove();
-                playground.getChildren().remove(brick);
-                //case depending of type of block?
-                Bounds iBounds = intersection.getBoundsInParent();
-                System.out.println("Hit zone: "+iBounds);
-                System.out.println("Brick: "+brick.getShape().getBoundsInParent());
-                //iBounds going wild in fullscreen
-                //make the correct algorithm!!!
-                if (intersection.getBoundsInLocal().getWidth() < intersection.getBoundsInLocal().getHeight()) {
-                    negateSpeedX = true;
-                    if(b.getSpeedX()>0){
-                        newX=(2*(iBounds.getMinX()-b.getShape().getRadius())-newX);
-                    } else {
-                        newX=(2*(iBounds.getMaxX()+b.getShape().getRadius())-newX);
-                    }
-                } else {
-                    negateSpeedY = true;
-                    if(b.getSpeedY()>0){
-                        newY=(2*(iBounds.getMinY()-b.getShape().getRadius())-newY);
-                    } else {
-                        newY=(2*(iBounds.getMaxY()+b.getShape().getRadius())-newY);
-                    }
+        double movementX=b.getSpeedX()*deltaTime, movementY=b.getSpeedY()*deltaTime;
+        double currentBallX=b.getTranslateX(), currentBallY=b.getTranslateY();
+        boolean keepChecking=true;
+        double minMovementX, minMovementY;
+        while (keepChecking) {
+            keepChecking=false;
+            minMovementX = Math.abs(movementX);
+            minMovementY = Math.abs(movementY);
+            
+            if(currentBallX+b.getRadius()+movementX>bounds.getMaxX()){
+                double moveByX=bounds.getMaxX()-b.getRadius()-currentBallX;
+                if(moveByX<minMovementX){
+                    //hit is now guaranteed (but not by X axis)
+                    keepChecking=true;
+                    minMovementX=moveByX;
+                }
+            }
+            if(currentBallX-b.getRadius()+movementX<bounds.getMinX()){
+                double moveByX=currentBallX-(bounds.getMinX()+b.getRadius());
+                if(moveByX<minMovementX){
+                    keepChecking=true;
+                    minMovementX=moveByX;
+                }
+            }
+            if(currentBallY+b.getRadius()+movementY>bounds.getMaxY()){
+                //the ball should be lost here, but here is test check
+                double moveByY=bounds.getMaxY()-b.getRadius()-currentBallY;
+                if(moveByY<minMovementY){
+                    //hit is now guaranteed (but not by Y axis)
+                    keepChecking=true;
+                    minMovementY=moveByY;
+                }
+            }
+            if(currentBallY-b.getRadius()+movementY<bounds.getMinY()){
+                double moveByY=currentBallY-(bounds.getMinY()+b.getRadius());
+                if(moveByY<minMovementY){
+                    keepChecking=true;
+                    minMovementY=moveByY;
+                }
+            }
+            //if hit guaranteed, update ball position according to what axis hit first
+            if(keepChecking){
+                double ratioX = minMovementX/Math.abs(movementX);
+                double ratioY = minMovementY/Math.abs(movementY);
+                if(ratioX < ratioY){
+                    currentBallX+=movementX*ratioX;
+                    currentBallY+=movementY*ratioX;
+                    movementX=movementX-movementX*ratioX;
+                    movementX=-movementX;
+                    b.setSpeedX(-b.getSpeedX());
+                    movementY=movementY-movementY*ratioX;
+                } else{
+                    currentBallX+=movementX*ratioY;
+                    currentBallY+=movementY*ratioY;
+                    movementX=movementX-movementX*ratioY;
+                    movementY=movementY-movementY*ratioY;
+                    movementY=-movementY;
+                    b.setSpeedY(-b.getSpeedY());
                 }
             }
         }
-        if(Shape.intersect(b.getShape(), paddle.getShape()).getLayoutBounds().getWidth()>0){
-            b.setAngle(Math.atan2(newY-(paddle.getShape().getCenterY()+paddle.getTranslateY())-25, newX-(paddle.getShape().getCenterX()+paddle.getTranslateX())));
-            //maybe set not to change angle until they are not in contact anymore
-        } else{
-            if(negateSpeedX) b.setSpeedX(-b.getSpeedX());
-            if(negateSpeedY) b.setSpeedY(-b.getSpeedY());
-        }
-        b.setTranslateX(newX);
-        b.setTranslateY(newY);
+        //end of hits
+        currentBallX+=movementX;
+        currentBallY+=movementY;
+        b.setTranslateX(currentBallX);
+        b.setTranslateY(currentBallY);        
     }
     
     public static double WINDOW_WIDTH=800;
