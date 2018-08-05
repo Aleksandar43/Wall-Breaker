@@ -53,21 +53,24 @@ public class WallBreaker extends Application {
                 } else {
                     paddle.move(mouseX, WINDOW_WIDTH, 0, WINDOW_WIDTH-gameStats.getPrefWidth());
                 }
-                moveBall(firstBall, deltaTime, playground.getBoundsInLocal());
+                moveBall(firstBall, deltaTime, playground.getBoundsInLocal(), bricks);
             }
             time=now;
         }
     }
     
-    private void moveBall(Ball b, double deltaTime, Bounds bounds){
+    private void moveBall(Ball b, double deltaTime, Bounds bounds, List<Brick> bricks){
         double movementX=b.getSpeedX()*deltaTime, movementY=b.getSpeedY()*deltaTime;
         double currentBallX=b.getTranslateX(), currentBallY=b.getTranslateY();
         boolean keepChecking=true, hitByPaddle=false, alreadyHitByPaddle=false;
         double minMovementX, minMovementY;
         double newAngle = 0;
+        Brick brickToBeHitX=null, brickToBeHitY=null;
         while (keepChecking) {
             keepChecking=false;
             hitByPaddle=false;
+            brickToBeHitX=null;
+            brickToBeHitY=null;
             minMovementX = Math.abs(movementX);
             minMovementY = Math.abs(movementY);
             
@@ -185,8 +188,47 @@ public class WallBreaker extends Application {
                 }
             }
             
+            for(Brick brick:bricks){
+                Bounds brickBounds=brick.getBoundsInParent();
+                if(currentBallX+b.getRadius()+movementX>brickBounds.getMinX()){
+                    double moveByX=(brickBounds.getMinX()-b.getRadius())-currentBallX;
+                    double moveByY=moveByX*movementY/movementX;
+                    if(moveByX>0 && moveByX<minMovementX && currentBallY+moveByY>=brickBounds.getMinY() && currentBallY+b.getRadius()+moveByY<=brickBounds.getMaxY()){
+                        keepChecking=true;
+                        minMovementX=moveByX;
+                        brickToBeHitX=brick;
+                    }
+                }
+                if(currentBallX-b.getRadius()+movementX<brickBounds.getMaxX()){
+                    double moveByX=currentBallX-(brickBounds.getMaxX()+b.getRadius());
+                    double moveByY=moveByX*movementY/movementX;
+                    if(moveByX>0 && moveByX<minMovementX && currentBallY+moveByY>=brickBounds.getMinY() && currentBallY-b.getRadius()+moveByY<=brickBounds.getMaxY()){
+                        keepChecking=true;
+                        minMovementX=moveByX;
+                        brickToBeHitX=brick;
+                    }
+                }
+                if(currentBallY+b.getRadius()+movementY>brickBounds.getMinY()){
+                    double moveByY=(brickBounds.getMinY()-b.getRadius())-currentBallY;
+                    double moveByX=moveByY*movementX/movementY;
+                    if(moveByY>0 && moveByY<minMovementY && currentBallX+moveByX>=brickBounds.getMinX() && currentBallX+b.getRadius()+moveByX<=brickBounds.getMaxX()){
+                        keepChecking=true;
+                        minMovementY=moveByY;
+                        brickToBeHitY=brick;
+                    }
+                }
+                if(currentBallY-b.getRadius()+movementY<brickBounds.getMaxY()){
+                    double moveByY=currentBallY-(brickBounds.getMaxY()+b.getRadius());
+                    double moveByX=moveByY*movementX/movementY;
+                    if(moveByY>0 && moveByY<minMovementY && currentBallX+moveByX>=brickBounds.getMinX() && currentBallX-b.getRadius()+moveByX<=brickBounds.getMaxX()){
+                        keepChecking=true;
+                        minMovementY=moveByY;
+                        brickToBeHitY=brick;
+                    }
+                }
+            }
+            
             //if hit guaranteed, update ball position and speed
-            //and also remove brick here
             if(keepChecking){
                 double ratioX = movementX!=0 ? minMovementX/Math.abs(movementX) : Double.MAX_VALUE;
                 double ratioY = movementY!=0 ? minMovementY/Math.abs(movementY) : Double.MAX_VALUE;
@@ -199,7 +241,13 @@ public class WallBreaker extends Application {
                     currentBallY+=movementY*ratioX;
                     movementX=movementX-movementX*ratioX;
                     movementY=movementY-movementY*ratioX;
-                    if (!hitByPaddle) {
+                    if(brickToBeHitX!=null){
+                        movementX=-movementX;
+                        b.setSpeedX(-b.getSpeedX());
+                        brickToBeHitX.onHit();
+                        bricks.remove(brickToBeHitX);
+                        playground.getChildren().remove(brickToBeHitX);
+                    } else if (!hitByPaddle) {
                         movementX=-movementX;
                         b.setSpeedX(-b.getSpeedX());
                     } else {
@@ -213,7 +261,13 @@ public class WallBreaker extends Application {
                     currentBallY+=movementY*ratioY;
                     movementX=movementX-movementX*ratioY;
                     movementY=movementY-movementY*ratioY;
-                    if (!hitByPaddle) {
+                    if(brickToBeHitY!=null){
+                        movementY=-movementY;
+                        b.setSpeedY(-b.getSpeedY());
+                        brickToBeHitY.onHit();
+                        bricks.remove(brickToBeHitY);
+                        playground.getChildren().remove(brickToBeHitY);
+                    } else if (!hitByPaddle) {
                         movementY=-movementY;
                         b.setSpeedY(-b.getSpeedY());
                     } else {
@@ -309,7 +363,7 @@ public class WallBreaker extends Application {
         firstBall.setTranslateX(60);
         firstBall.setTranslateY(300);
         firstBall.setSpeedX(0);
-        firstBall.setSpeedY(400);
+        firstBall.setSpeedY(200);
         playground.getChildren().add(firstBall);
         
         makeMainMenu();
