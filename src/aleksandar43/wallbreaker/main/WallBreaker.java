@@ -7,8 +7,10 @@ import aleksandar43.wallbreaker.game.Paddle;
 import aleksandar43.wallbreaker.game.RectangleBrick;
 import aleksandar43.wallbreaker.gui.HighScores;
 import aleksandar43.wallbreaker.gui.MenuText;
+import java.awt.AWTException;
+import java.awt.MouseInfo;
+import java.awt.Robot;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -45,13 +47,32 @@ public class WallBreaker extends Application {
         private long time;
         @Override
         public void handle(long now) {
-            //change for debugging
+            newMouseX=MouseInfo.getPointerInfo().getLocation().x;
+            newMouseY=MouseInfo.getPointerInfo().getLocation().y;
+            int mx=newMouseX-oldMouseX;
+            int my=newMouseY-oldMouseY;
+            if(oldMouseX+mx<stage.getX()){
+                newMouseX=(int)stage.getX();
+            }
+            if(oldMouseX+mx>stage.getX()+stage.getWidth()){
+                newMouseX=(int)(stage.getX()+stage.getWidth());
+            }
+            if(oldMouseY+my<stage.getY()){
+                newMouseY=(int)stage.getY();
+            }
+            if(oldMouseY+my>stage.getY()+stage.getHeight()){
+                newMouseY=(int)(stage.getY()+stage.getHeight());
+            }
+            if (inGame && !paused && robot!=null) robot.mouseMove(newMouseX, newMouseY);
+            oldMouseX=newMouseX;
+            oldMouseY=newMouseY;
+            //0.2 is for debugging
             double deltaTime=Math.min((now-time)/1e9, 0.2);
-            if (inGame && !paused) {
-                if (stage.isFullScreen()) {
-                    paddle.move(mouseX, FULLSCREEN_WIDTH, 0, WINDOW_WIDTH-gameStats.getPrefWidth());
+            if(inGame && !paused) {
+                if(stage.isFullScreen()) {
+                    paddle.move(newMouseX-stage.getX(), FULLSCREEN_WIDTH, 0, WINDOW_WIDTH-gameStats.getPrefWidth());
                 } else {
-                    paddle.move(mouseX, WINDOW_WIDTH, 0, WINDOW_WIDTH-gameStats.getPrefWidth());
+                    paddle.move(newMouseX-stage.getX(), WINDOW_WIDTH, 0, WINDOW_WIDTH-gameStats.getPrefWidth());
                 }
                 moveBall(firstBall, deltaTime, playground.getBoundsInLocal(), bricks);
             }
@@ -298,13 +319,19 @@ public class WallBreaker extends Application {
     private Paddle paddle;
     private Ball firstBall;
     private GameAnimationTimer gameAnimationTimer;
-    private double mouseX, mouseY;
+    private int oldMouseX, oldMouseY, newMouseX, newMouseY;
+    private Robot robot;
     private Stage stage;
     private List<Brick> bricks;
     @Override
     public void start(Stage primaryStage) {
         stage=primaryStage;
         gameAnimationTimer=new GameAnimationTimer();
+        try {
+            robot=new Robot();
+        } catch (AWTException ex) {
+            System.err.println("Robot cannot be constructed, cursor cannot be stopped to go outside of game window");
+        }
         
         makeOptionsMenu(primaryStage);
         makeAboutMenu();
@@ -323,7 +350,7 @@ public class WallBreaker extends Application {
         gameStats.getChildren().add(new Text("0:00:00"));
         gameStats.getChildren().add(new Text("Životi"));
         gameStats.getChildren().add(new Text("0"));
-        MenuText pause = new MenuText("Pauza");
+        MenuText pause = new MenuText("Pauza"); //this may be unnecessary
         pause.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -372,21 +399,13 @@ public class WallBreaker extends Application {
         menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,gameGroup,pauseMenu,mainMenu);
         Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         
-        scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                mouseX=event.getSceneX();
-                mouseY=event.getSceneY();
-            }
-        });
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 if(inGame && event.getCode().equals(KeyCode.ESCAPE) && !paused){
                     System.out.println("ESC key pressed");
-                    System.out.println(gameGroup.getBoundsInParent());
-                    System.out.println(pauseMenu.getBoundsInParent());
-                    System.out.println(mainMenu.getBoundsInParent());
+                    System.out.println("Scene x: "+scene.getX());
+                    System.out.println("Stage x: "+stage.getX());
                     paused=true;
                     pauseMenu.toFront();
                 }
@@ -405,8 +424,6 @@ public class WallBreaker extends Application {
         System.out.println("Dimensions: "+scene.getWidth()+", "+scene.getHeight());
         System.out.println("Highscores: "+HighScores.getHighScores());
         System.out.println("Paddle bounds: "+paddle.getBoundsInParent());
-        System.out.println("Ball stroke width : "+firstBall.getShape().getStrokeWidth());
-        System.out.println("Paddle stroke width : "+paddle.getShape().getStrokeWidth());
     }
 
     private void makeOptionsMenu(Stage primaryStage) {
