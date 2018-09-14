@@ -79,6 +79,7 @@ public class WallBreaker extends Application {
                 }
                 moveBall(firstBall, deltaTime, playground.getBoundsInLocal(), bricks);
             }
+            if(bricks.size()==0) goToNextLevel();
             time=now;
         }
     }
@@ -661,8 +662,24 @@ public class WallBreaker extends Application {
             Node n = it.next();
             if(n instanceof Brick) it.remove();
         }
-        bricks=levelSet.get(index).getBricks();
-        for(Brick b:bricks) playground.getChildren().add(b);
+        bricks.clear();
+        for(Brick b:levelSet.get(index).getBricks()){
+            bricks.add(b);
+            playground.getChildren().add(b);
+        }
+        //also bring back ball to the paddle
+    }
+    
+    private void goToNextLevel(){
+        inGame=false;
+        levelCounter++;
+        if(levelCounter<levelSet.size()){
+            loadLevel(levelCounter);
+            inGame=true;
+        }
+        else{ //yay, game finished
+            mainMenu.toFront();
+        }
     }
     
     /**
