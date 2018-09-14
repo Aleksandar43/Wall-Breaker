@@ -1,0 +1,12 @@
+Starter levels
+Level 1
+50 0 #FF0000
+50 30 #FFFF00
+50 60 #00FF00
+50 90 #00FFFF
+-
+Another level
+50 50 #0000FF
+100 100 #888888
+150 150 #FFFFFF
+-

@@ -3,6 +3,7 @@ package aleksandar43.wallbreaker.main;
 
 import aleksandar43.wallbreaker.game.Ball;
 import aleksandar43.wallbreaker.game.Brick;
+import aleksandar43.wallbreaker.game.Level;
 import aleksandar43.wallbreaker.game.Paddle;
 import aleksandar43.wallbreaker.game.RectangleBrick;
 import aleksandar43.wallbreaker.gui.HighScores;
@@ -11,6 +12,7 @@ import java.awt.AWTException;
 import java.awt.MouseInfo;
 import java.awt.Robot;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -19,6 +21,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -323,6 +326,8 @@ public class WallBreaker extends Application {
     private Robot robot;
     private Stage stage;
     private List<Brick> bricks;
+    private List<Level> levelSet;
+    private int levelCounter;
     @Override
     public void start(Stage primaryStage) {
         stage=primaryStage;
@@ -332,6 +337,8 @@ public class WallBreaker extends Application {
         } catch (AWTException ex) {
             System.err.println("Robot cannot be constructed, cursor cannot be stopped to go outside of game window");
         }
+        
+        makeLevelSet();
         
         makeOptionsMenu(primaryStage);
         makeAboutMenu();
@@ -369,12 +376,14 @@ public class WallBreaker extends Application {
         paddle.setTranslateX(WINDOW_WIDTH/2);
         //wrap playground and paddle into a new group
         //playground.getChildren().add(paddle);
-        bricks=new ArrayList<>();
+        /*bricks=new ArrayList<>();
         for(int i=0;i<20;i++){
             Brick b=new RectangleBrick(Math.random()*500, Math.random()*300, 30, 15, Color.RED);
             bricks.add(b);
             playground.getChildren().add(b);
-        }
+        }*/
+        bricks=new ArrayList<>();
+        for(Brick b:bricks) playground.getChildren().add(b);
         
         gamePane=new BorderPane();
         gamePane.setMaxWidth(WINDOW_WIDTH);
@@ -584,8 +593,7 @@ public class WallBreaker extends Application {
         startGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                inGame=true;
-                //gamePane.toFront();
+                startGame();
                 gameGroup.toFront();
             }
         });
@@ -627,6 +635,36 @@ public class WallBreaker extends Application {
         });
     }
 
+    public void makeLevelSet(){
+        levelSet=new ArrayList<>();
+        //level 1
+        Level level;
+        level = new Level("Level 1");
+        for(int i=0;i<6;i++)
+            level.getBricks().add(new RectangleBrick(i*50, 50, 30, 15, Color.YELLOW));
+        levelSet.add(level);
+        //level 2
+        level = new Level("Another level");
+        for(int i=0;i<6;i++)
+            level.getBricks().add(new RectangleBrick(i*50, i*50, 30, 15, Color.ORANGE));
+        levelSet.add(level);
+    }
+
+    private void startGame(){
+        levelCounter=0;
+        loadLevel(0);
+        inGame=true;
+    }
+    
+    private void loadLevel(int index){
+        for (Iterator<Node> it = playground.getChildren().iterator(); it.hasNext();) {
+            Node n = it.next();
+            if(n instanceof Brick) it.remove();
+        }
+        bricks=levelSet.get(index).getBricks();
+        for(Brick b:bricks) playground.getChildren().add(b);
+    }
+    
     /**
      * @param args the command line arguments
      */
