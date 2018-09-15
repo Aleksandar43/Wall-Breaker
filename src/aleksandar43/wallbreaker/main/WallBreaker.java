@@ -78,6 +78,18 @@ public class WallBreaker extends Application {
                     paddle.move(newMouseX-stage.getX(), WINDOW_WIDTH, 0, WINDOW_WIDTH-gameStats.getPrefWidth());
                 }
                 moveBall(firstBall, deltaTime, playground.getBoundsInLocal(), bricks);
+                levelTime+=now-time;
+                long seconds=(long) (levelTime/1e9);
+                long minutes=seconds/60;
+                seconds=seconds%60;
+                long hundreds=(long) (levelTime/1e7) % 100;
+                String s=minutes+":";
+                if(seconds<=9) s+="0"+seconds;
+                else s+=seconds;
+                s+=".";
+                if(hundreds<=9) s+="0"+hundreds;
+                else s+=hundreds;
+                levelTimeText.setText(s);
             }
             pointsText.setText(Integer.toString(points));
             if(bricks.size()==0) goToNextLevel(); //it should be showLevelResults() instead
@@ -333,7 +345,8 @@ public class WallBreaker extends Application {
     private List<Level> levelSet;
     private int levelCounter;
     private int points;
-    private Text pointsText, timeText;
+    private long levelTime;
+    private Text pointsText, levelTimeText;
     @Override
     public void start(Stage primaryStage) {
         stage=primaryStage;
@@ -361,7 +374,8 @@ public class WallBreaker extends Application {
         pointsText=new Text("0");
         gameStats.getChildren().add(pointsText);
         gameStats.getChildren().add(new Text("Vreme"));
-        gameStats.getChildren().add(new Text("0:00:00"));
+        levelTimeText=new Text("0:00:00");
+        gameStats.getChildren().add(levelTimeText);
         gameStats.getChildren().add(new Text("Životi"));
         gameStats.getChildren().add(new Text("0"));
         MenuText pause = new MenuText("Pauza"); //this may be unnecessary
@@ -673,6 +687,7 @@ public class WallBreaker extends Application {
     
     private void goToNextLevel(){
         inGame=false;
+        levelTime=0;
         levelCounter++;
         if(levelCounter<levelSet.size()){
             loadLevel(levelCounter);
