@@ -98,242 +98,250 @@ public class WallBreaker extends Application {
     }
     
     private void moveBall(Ball b, double deltaTime, Bounds bounds, List<Brick> bricks){
-        double movementX=b.getSpeedX()*deltaTime, movementY=b.getSpeedY()*deltaTime;
-        double currentBallX=b.getTranslateX(), currentBallY=b.getTranslateY();
-        boolean keepChecking=true, hitByPaddle=false, alreadyHitByPaddle=false;
-        double minMovementX, minMovementY;
-        double newAngle = 0;
-        Brick brickToBeHitX=null, brickToBeHitY=null;
-        while (keepChecking) {
-            keepChecking=false;
-            hitByPaddle=false;
-            brickToBeHitX=null;
-            brickToBeHitY=null;
-            minMovementX = Math.abs(movementX);
-            minMovementY = Math.abs(movementY);
-            
-            if(currentBallX+b.getRadius()+movementX>bounds.getMaxX()){
-                double moveByX=bounds.getMaxX()-b.getRadius()-currentBallX;
-                if(moveByX<minMovementX){
-                    //hit is now guaranteed (but not by X axis)
-                    keepChecking=true;
-                    minMovementX=moveByX;
-                }
-            }
-            if(currentBallX-b.getRadius()+movementX<bounds.getMinX()){
-                double moveByX=currentBallX-(bounds.getMinX()+b.getRadius());
-                if(moveByX<minMovementX){
-                    keepChecking=true;
-                    minMovementX=moveByX;
-                }
-            }
-            if(currentBallY+b.getRadius()+movementY>bounds.getMaxY()){
-                //the ball should be lost here, but here is test check
-                double moveByY=bounds.getMaxY()-b.getRadius()-currentBallY;
-                if(moveByY<minMovementY){
-                    //hit is now guaranteed (but not by Y axis)
-                    keepChecking=true;
-                    minMovementY=moveByY;
-                }
-            }
-            if(currentBallY-b.getRadius()+movementY<bounds.getMinY()){
-                double moveByY=currentBallY-(bounds.getMinY()+b.getRadius());
-                if(moveByY<minMovementY){
-                    keepChecking=true;
-                    minMovementY=moveByY;
-                }
-            }
-            //checking hit with paddle, assuming it is circular
-            if (!alreadyHitByPaddle) {
-                if (b.getSpeedX()!=0) {
-                    double k = b.getSpeedY() / b.getSpeedX();
-                    double lc = -k * currentBallX + currentBallY;
-                    double A = 1 + k * k;
-                    double xp = paddle.getTranslateX();
-                    double yp = paddle.getTranslateY();
-                    double B = -2 * xp + 2 * k * lc - 2 * yp * k;
-                    double R = paddle.getShape().getRadiusY() + paddle.getShape().getStrokeWidth() / 2 + b.getShape().getRadius();
-                    double C = xp * xp + lc * lc - 2 * yp * lc + yp * yp - R * R;
-                    double D = B * B - 4 * A * C;
-                    if (D < 0) {
-                        //no collision points, do nothing
-                    } else if (D == 0) {
-                        //one collision point
-                        double xc = -B / (2 * A);
-                        double yc = k * (xc - currentBallX) + currentBallY; //do I need this?
-                        if (Math.abs(xc - currentBallX) < minMovementX) {
-                            keepChecking = true;
-                            minMovementX = Math.abs(xc - currentBallX);
-                            hitByPaddle = true;
-                            newAngle = (Math.atan2(yc - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, xc - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
-                        }
-                    } else {
-                        //two collision points
-                        double xc1 = (-B + Math.sqrt(D)) / (2 * A);
-                        double yc1 = k * (xc1 - currentBallX) + currentBallY;
-                        if (Math.abs(xc1 - currentBallX) < minMovementX) {
-                            keepChecking = true;
-                            minMovementX = Math.abs(xc1 - currentBallX);
-                            hitByPaddle = true;
-                            newAngle = (Math.atan2(yc1 - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, xc1 - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
-                        }
-                        double xc2 = (-B - Math.sqrt(D)) / (2 * A);
-                        double yc2 = k * (xc2 - currentBallX) + currentBallY;
-                        if (Math.abs(xc2 - currentBallX) < minMovementX) {
-                            keepChecking = true;
-                            minMovementX = Math.abs(xc2 - currentBallX);
-                            hitByPaddle = true;
-                            newAngle = (Math.atan2(yc2 - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, xc2 - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
-                        }
-                    }
-                } else {
-                    double R = paddle.getShape().getRadiusY() + paddle.getShape().getStrokeWidth() / 2 + b.getShape().getRadius();
-                    double xp = paddle.getTranslateX();
-                    double yp = paddle.getTranslateY();
-                    double c=R*R-(currentBallX-xp)*(currentBallX-xp);
-                    double A=1;
-                    double B=-2*yp;
-                    double C=yp*yp-c;
-                    double D = B * B - 4 * A * C;
-                    if (D < 0) {
-                        //no collision points, do nothing
-                    } else if (D == 0) {
-                        //one collision point
-                        double yc = -B / (2 * A);
-                        if (Math.abs(yc - currentBallY) < minMovementY) {
-                            keepChecking = true;
-                            minMovementY = Math.abs(yc - currentBallY);
-                            hitByPaddle = true;
-                            newAngle = (Math.atan2(yc - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, currentBallX - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
-                        }
-                    } else {
-                        //two collision points
-                        double yc1 = (-B + Math.sqrt(D)) / (2 * A);
-                        if (Math.abs(yc1 - currentBallY) < minMovementY) {
-                            keepChecking = true;
-                            minMovementY = Math.abs(yc1 - currentBallY);
-                            hitByPaddle = true;
-                            newAngle = (Math.atan2(yc1 - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, currentBallX - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
-                        }
-                        double yc2 = (-B - Math.sqrt(D)) / (2 * A);
-                        if (Math.abs(yc2 - currentBallY) < minMovementY) {
-                            keepChecking = true;
-                            minMovementY = Math.abs(yc2 - currentBallY);
-                            hitByPaddle = true;
-                            newAngle = (Math.atan2(yc2 - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, currentBallX - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
-                        }
-                    }
-                }
-            }
-            
-            for(Brick brick:bricks){
-                Bounds brickBounds=brick.getBoundsInParent();
-                if(currentBallX+b.getRadius()+movementX>brickBounds.getMinX()){
-                    double moveByX=(brickBounds.getMinX()-b.getRadius())-currentBallX;
-                    double moveByY=moveByX*movementY/movementX;
-                    if(moveByX>0 && moveByX<minMovementX && currentBallY+moveByY>=brickBounds.getMinY() && currentBallY+b.getRadius()+moveByY<=brickBounds.getMaxY()){
+        if (ballLaunched) {
+            double movementX=b.getSpeedX()*deltaTime, movementY=b.getSpeedY()*deltaTime;
+            double currentBallX=b.getTranslateX(), currentBallY=b.getTranslateY();
+            boolean keepChecking=true, hitByPaddle=false, alreadyHitByPaddle=false;
+            double minMovementX, minMovementY;
+            double newAngle = 0;
+            Brick brickToBeHitX=null, brickToBeHitY=null;
+            while (keepChecking) {
+                keepChecking=false;
+                hitByPaddle=false;
+                brickToBeHitX=null;
+                brickToBeHitY=null;
+                minMovementX = Math.abs(movementX);
+                minMovementY = Math.abs(movementY);
+                
+                if(currentBallX+b.getRadius()+movementX>bounds.getMaxX()){
+                    double moveByX=bounds.getMaxX()-b.getRadius()-currentBallX;
+                    if(moveByX<minMovementX){
+                        //hit is now guaranteed (but not by X axis)
                         keepChecking=true;
                         minMovementX=moveByX;
-                        brickToBeHitX=brick;
                     }
                 }
-                if(currentBallX-b.getRadius()+movementX<brickBounds.getMaxX()){
-                    double moveByX=currentBallX-(brickBounds.getMaxX()+b.getRadius());
-                    double moveByY=moveByX*movementY/movementX;
-                    if(moveByX>0 && moveByX<minMovementX && currentBallY+moveByY>=brickBounds.getMinY() && currentBallY-b.getRadius()+moveByY<=brickBounds.getMaxY()){
+                if(currentBallX-b.getRadius()+movementX<bounds.getMinX()){
+                    double moveByX=currentBallX-(bounds.getMinX()+b.getRadius());
+                    if(moveByX<minMovementX){
                         keepChecking=true;
                         minMovementX=moveByX;
-                        brickToBeHitX=brick;
                     }
                 }
-                if(currentBallY+b.getRadius()+movementY>brickBounds.getMinY()){
-                    double moveByY=(brickBounds.getMinY()-b.getRadius())-currentBallY;
-                    double moveByX=moveByY*movementX/movementY;
-                    if(moveByY>0 && moveByY<minMovementY && currentBallX+moveByX>=brickBounds.getMinX() && currentBallX+b.getRadius()+moveByX<=brickBounds.getMaxX()){
+                if(currentBallY+b.getRadius()+movementY>bounds.getMaxY()){
+                    //the ball should be lost here, but here is test check
+                    double moveByY=bounds.getMaxY()-b.getRadius()-currentBallY;
+                    if(moveByY<minMovementY){
+                        //hit is now guaranteed (but not by Y axis)
                         keepChecking=true;
                         minMovementY=moveByY;
-                        brickToBeHitY=brick;
                     }
                 }
-                if(currentBallY-b.getRadius()+movementY<brickBounds.getMaxY()){
-                    double moveByY=currentBallY-(brickBounds.getMaxY()+b.getRadius());
-                    double moveByX=moveByY*movementX/movementY;
-                    if(moveByY>0 && moveByY<minMovementY && currentBallX+moveByX>=brickBounds.getMinX() && currentBallX-b.getRadius()+moveByX<=brickBounds.getMaxX()){
+                if(currentBallY-b.getRadius()+movementY<bounds.getMinY()){
+                    double moveByY=currentBallY-(bounds.getMinY()+b.getRadius());
+                    if(moveByY<minMovementY){
                         keepChecking=true;
                         minMovementY=moveByY;
-                        brickToBeHitY=brick;
+                    }
+                }
+                //checking hit with paddle, assuming it is circular
+                if (!alreadyHitByPaddle) {
+                    if (b.getSpeedX()!=0) {
+                        double k = b.getSpeedY() / b.getSpeedX();
+                        double lc = -k * currentBallX + currentBallY;
+                        double A = 1 + k * k;
+                        double xp = paddle.getTranslateX();
+                        double yp = paddle.getTranslateY();
+                        double B = -2 * xp + 2 * k * lc - 2 * yp * k;
+                        double R = paddle.getShape().getRadiusY() + paddle.getShape().getStrokeWidth() / 2 + b.getShape().getRadius();
+                        double C = xp * xp + lc * lc - 2 * yp * lc + yp * yp - R * R;
+                        double D = B * B - 4 * A * C;
+                        if (D < 0) {
+                            //no collision points, do nothing
+                        } else if (D == 0) {
+                            //one collision point
+                            double xc = -B / (2 * A);
+                            double yc = k * (xc - currentBallX) + currentBallY; //do I need this?
+                            if (Math.abs(xc - currentBallX) < minMovementX) {
+                                keepChecking = true;
+                                minMovementX = Math.abs(xc - currentBallX);
+                                hitByPaddle = true;
+                                newAngle = (Math.atan2(yc - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, xc - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
+                            }
+                        } else {
+                            //two collision points
+                            double xc1 = (-B + Math.sqrt(D)) / (2 * A);
+                            double yc1 = k * (xc1 - currentBallX) + currentBallY;
+                            if (Math.abs(xc1 - currentBallX) < minMovementX) {
+                                keepChecking = true;
+                                minMovementX = Math.abs(xc1 - currentBallX);
+                                hitByPaddle = true;
+                                newAngle = (Math.atan2(yc1 - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, xc1 - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
+                            }
+                            double xc2 = (-B - Math.sqrt(D)) / (2 * A);
+                            double yc2 = k * (xc2 - currentBallX) + currentBallY;
+                            if (Math.abs(xc2 - currentBallX) < minMovementX) {
+                                keepChecking = true;
+                                minMovementX = Math.abs(xc2 - currentBallX);
+                                hitByPaddle = true;
+                                newAngle = (Math.atan2(yc2 - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, xc2 - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
+                            }
+                        }
+                    } else {
+                        double R = paddle.getShape().getRadiusY() + paddle.getShape().getStrokeWidth() / 2 + b.getShape().getRadius();
+                        double xp = paddle.getTranslateX();
+                        double yp = paddle.getTranslateY();
+                        double c=R*R-(currentBallX-xp)*(currentBallX-xp);
+                        double A=1;
+                        double B=-2*yp;
+                        double C=yp*yp-c;
+                        double D = B * B - 4 * A * C;
+                        if (D < 0) {
+                            //no collision points, do nothing
+                        } else if (D == 0) {
+                            //one collision point
+                            double yc = -B / (2 * A);
+                            if (Math.abs(yc - currentBallY) < minMovementY) {
+                                keepChecking = true;
+                                minMovementY = Math.abs(yc - currentBallY);
+                                hitByPaddle = true;
+                                newAngle = (Math.atan2(yc - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, currentBallX - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
+                            }
+                        } else {
+                            //two collision points
+                            double yc1 = (-B + Math.sqrt(D)) / (2 * A);
+                            if (Math.abs(yc1 - currentBallY) < minMovementY) {
+                                keepChecking = true;
+                                minMovementY = Math.abs(yc1 - currentBallY);
+                                hitByPaddle = true;
+                                newAngle = (Math.atan2(yc1 - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, currentBallX - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
+                            }
+                            double yc2 = (-B - Math.sqrt(D)) / (2 * A);
+                            if (Math.abs(yc2 - currentBallY) < minMovementY) {
+                                keepChecking = true;
+                                minMovementY = Math.abs(yc2 - currentBallY);
+                                hitByPaddle = true;
+                                newAngle = (Math.atan2(yc2 - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, currentBallX - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
+                            }
+                        }
+                    }
+                }
+                
+                for(Brick brick:bricks){
+                    Bounds brickBounds=brick.getBoundsInParent();
+                    if(currentBallX+b.getRadius()+movementX>brickBounds.getMinX()){
+                        double moveByX=(brickBounds.getMinX()-b.getRadius())-currentBallX;
+                        double moveByY=moveByX*movementY/movementX;
+                        if(moveByX>0 && moveByX<minMovementX && currentBallY+moveByY>=brickBounds.getMinY() && currentBallY+b.getRadius()+moveByY<=brickBounds.getMaxY()){
+                            keepChecking=true;
+                            minMovementX=moveByX;
+                            brickToBeHitX=brick;
+                        }
+                    }
+                    if(currentBallX-b.getRadius()+movementX<brickBounds.getMaxX()){
+                        double moveByX=currentBallX-(brickBounds.getMaxX()+b.getRadius());
+                        double moveByY=moveByX*movementY/movementX;
+                        if(moveByX>0 && moveByX<minMovementX && currentBallY+moveByY>=brickBounds.getMinY() && currentBallY-b.getRadius()+moveByY<=brickBounds.getMaxY()){
+                            keepChecking=true;
+                            minMovementX=moveByX;
+                            brickToBeHitX=brick;
+                        }
+                    }
+                    if(currentBallY+b.getRadius()+movementY>brickBounds.getMinY()){
+                        double moveByY=(brickBounds.getMinY()-b.getRadius())-currentBallY;
+                        double moveByX=moveByY*movementX/movementY;
+                        if(moveByY>0 && moveByY<minMovementY && currentBallX+moveByX>=brickBounds.getMinX() && currentBallX+b.getRadius()+moveByX<=brickBounds.getMaxX()){
+                            keepChecking=true;
+                            minMovementY=moveByY;
+                            brickToBeHitY=brick;
+                        }
+                    }
+                    if(currentBallY-b.getRadius()+movementY<brickBounds.getMaxY()){
+                        double moveByY=currentBallY-(brickBounds.getMaxY()+b.getRadius());
+                        double moveByX=moveByY*movementX/movementY;
+                        if(moveByY>0 && moveByY<minMovementY && currentBallX+moveByX>=brickBounds.getMinX() && currentBallX-b.getRadius()+moveByX<=brickBounds.getMaxX()){
+                            keepChecking=true;
+                            minMovementY=moveByY;
+                            brickToBeHitY=brick;
+                        }
+                    }
+                }
+
+                //if hit guaranteed, update ball position and speed
+                if(keepChecking){
+                    double ratioX = movementX!=0 ? minMovementX/Math.abs(movementX) : Double.MAX_VALUE;
+                    double ratioY = movementY!=0 ? minMovementY/Math.abs(movementY) : Double.MAX_VALUE;
+                    if(ratioX==0)
+                            System.out.println("ratioX=0");
+                    if(ratioY==0)
+                            System.out.println("ratioY=0");
+                    if(ratioX < ratioY){
+                        currentBallX+=movementX*ratioX;
+                        currentBallY+=movementY*ratioX;
+                        movementX=movementX-movementX*ratioX;
+                        movementY=movementY-movementY*ratioX;
+                        if(brickToBeHitX!=null){
+                            movementX=-movementX;
+                            b.setSpeedX(-b.getSpeedX());
+                            brickToBeHitX.onHit();
+                            bricks.remove(brickToBeHitX);
+                            playground.getChildren().remove(brickToBeHitX);
+                            points+=5;
+                        } else if (!hitByPaddle) {
+                            movementX=-movementX;
+                            b.setSpeedX(-b.getSpeedX());
+                        } else {
+                            b.setAngle(newAngle);
+                            movementX=Math.hypot(movementX, movementY)*Math.cos(newAngle);
+                            movementY=Math.hypot(movementX, movementY)*Math.sin(newAngle);
+                            alreadyHitByPaddle=true;
+                        }
+                    } else{
+                        currentBallX+=movementX*ratioY;
+                        currentBallY+=movementY*ratioY;
+                        movementX=movementX-movementX*ratioY;
+                        movementY=movementY-movementY*ratioY;
+                        if(brickToBeHitY!=null){
+                            movementY=-movementY;
+                            b.setSpeedY(-b.getSpeedY());
+                            brickToBeHitY.onHit();
+                            bricks.remove(brickToBeHitY);
+                            playground.getChildren().remove(brickToBeHitY);
+                            points+=5;
+                        } else if (!hitByPaddle) {
+                            movementY=-movementY;
+                            b.setSpeedY(-b.getSpeedY());
+                        } else {
+                            b.setAngle(newAngle);
+                            movementX=Math.hypot(movementX, movementY)*Math.cos(newAngle);
+                            movementY=Math.hypot(movementX, movementY)*Math.sin(newAngle);
+                        }
                     }
                 }
             }
-            
-            //if hit guaranteed, update ball position and speed
-            if(keepChecking){
-                double ratioX = movementX!=0 ? minMovementX/Math.abs(movementX) : Double.MAX_VALUE;
-                double ratioY = movementY!=0 ? minMovementY/Math.abs(movementY) : Double.MAX_VALUE;
-                if(ratioX==0)
-                    System.out.println("ratioX=0");
-                if(ratioY==0)
-                    System.out.println("ratioY=0");
-                if(ratioX < ratioY){
-                    currentBallX+=movementX*ratioX;
-                    currentBallY+=movementY*ratioX;
-                    movementX=movementX-movementX*ratioX;
-                    movementY=movementY-movementY*ratioX;
-                    if(brickToBeHitX!=null){
-                        movementX=-movementX;
-                        b.setSpeedX(-b.getSpeedX());
-                        brickToBeHitX.onHit();
-                        bricks.remove(brickToBeHitX);
-                        playground.getChildren().remove(brickToBeHitX);
-                        points+=5;
-                    } else if (!hitByPaddle) {
-                        movementX=-movementX;
-                        b.setSpeedX(-b.getSpeedX());
-                    } else {
-                        b.setAngle(newAngle);
-                        movementX=Math.hypot(movementX, movementY)*Math.cos(newAngle);
-                        movementY=Math.hypot(movementX, movementY)*Math.sin(newAngle);
-                        alreadyHitByPaddle=true;
-                    }
-                } else{
-                    currentBallX+=movementX*ratioY;
-                    currentBallY+=movementY*ratioY;
-                    movementX=movementX-movementX*ratioY;
-                    movementY=movementY-movementY*ratioY;
-                    if(brickToBeHitY!=null){
-                        movementY=-movementY;
-                        b.setSpeedY(-b.getSpeedY());
-                        brickToBeHitY.onHit();
-                        bricks.remove(brickToBeHitY);
-                        playground.getChildren().remove(brickToBeHitY);
-                        points+=5;
-                    } else if (!hitByPaddle) {
-                        movementY=-movementY;
-                        b.setSpeedY(-b.getSpeedY());
-                    } else {
-                        b.setAngle(newAngle);
-                        movementX=Math.hypot(movementX, movementY)*Math.cos(newAngle);
-                        movementY=Math.hypot(movementX, movementY)*Math.sin(newAngle);
-                    }
-                }
-            }
+            //end of hits
+            currentBallX+=movementX;
+            currentBallY+=movementY;
+            b.setTranslateX(currentBallX);
+            b.setTranslateY(currentBallY);
         }
-        //end of hits
-        currentBallX+=movementX;
-        currentBallY+=movementY;
-        b.setTranslateX(currentBallX);
-        b.setTranslateY(currentBallY);        
+        else{
+            b.setTranslateX(paddle.getTranslateX()+launchRadius*Math.cos(launchAngle));
+            b.setTranslateY(paddle.getTranslateY()+launchRadius*Math.sin(launchAngle));
+        }
     }
     
     public static double WINDOW_WIDTH=800;
     public static double WINDOW_HEIGHT=450;
     public static double FULLSCREEN_WIDTH=Screen.getPrimary().getBounds().getWidth();
     public static double FULLSCREEN_HEIGHT=Screen.getPrimary().getBounds().getHeight();
+    private static double launchRadius=55+10;
+    private static double launchAngle=Math.toRadians(-60);
     private VBox mainMenu, optionsMenu, gameStats, pauseMenu;
     private BorderPane aboutMenu, highScoresMenu, gamePane;
     private Group gameGroup;
     private Group playground;
-    private boolean musicOn=true, soundEffectsOn=true, inGame=false, paused=false;
+    private boolean musicOn=true, soundEffectsOn=true, inGame=false, paused=false, ballLaunched=false;
     private Group menusStackPane;
     private Paddle paddle;
     private Ball firstBall;
@@ -418,6 +426,15 @@ public class WallBreaker extends Application {
         firstBall.setSpeedX(0);
         firstBall.setSpeedY(200);
         playground.getChildren().add(firstBall);
+        gameGroup.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(!ballLaunched){
+                    ballLaunched=true;
+                    firstBall.setAngle(-60);
+                }
+            }
+        });
         
         makeMainMenu();
         
@@ -681,6 +698,7 @@ public class WallBreaker extends Application {
         }
         bricks.clear();
         levelTime=0;
+        ballLaunched=false;
         for(Brick b:levelSet.get(index).getBricks()){
             bricks.add(b);
             playground.getChildren().add(b);
