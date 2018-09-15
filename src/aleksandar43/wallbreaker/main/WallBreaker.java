@@ -398,6 +398,8 @@ public class WallBreaker extends Application {
         //wrap playground and paddle into a new group
         //playground.getChildren().add(paddle);
         bricks=new ArrayList<>();
+        //dummy brick to stop gameAnimationHandler to "go to next level" at the program start
+        bricks.add(new Brick(""));
         for(Brick b:bricks) playground.getChildren().add(b);
         
         gamePane=new BorderPane();
@@ -678,6 +680,7 @@ public class WallBreaker extends Application {
             if(n instanceof Brick) it.remove();
         }
         bricks.clear();
+        levelTime=0;
         for(Brick b:levelSet.get(index).getBricks()){
             bricks.add(b);
             playground.getChildren().add(b);
@@ -687,7 +690,6 @@ public class WallBreaker extends Application {
     
     private void goToNextLevel(){
         inGame=false;
-        levelTime=0;
         levelCounter++;
         if(levelCounter<levelSet.size()){
             loadLevel(levelCounter);
