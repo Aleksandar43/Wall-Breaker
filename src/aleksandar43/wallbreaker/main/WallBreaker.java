@@ -79,7 +79,8 @@ public class WallBreaker extends Application {
                 }
                 moveBall(firstBall, deltaTime, playground.getBoundsInLocal(), bricks);
             }
-            if(bricks.size()==0) goToNextLevel();
+            pointsText.setText(Integer.toString(points));
+            if(bricks.size()==0) goToNextLevel(); //it should be showLevelResults() instead
             time=now;
         }
     }
@@ -272,6 +273,7 @@ public class WallBreaker extends Application {
                         brickToBeHitX.onHit();
                         bricks.remove(brickToBeHitX);
                         playground.getChildren().remove(brickToBeHitX);
+                        points+=5;
                     } else if (!hitByPaddle) {
                         movementX=-movementX;
                         b.setSpeedX(-b.getSpeedX());
@@ -292,6 +294,7 @@ public class WallBreaker extends Application {
                         brickToBeHitY.onHit();
                         bricks.remove(brickToBeHitY);
                         playground.getChildren().remove(brickToBeHitY);
+                        points+=5;
                     } else if (!hitByPaddle) {
                         movementY=-movementY;
                         b.setSpeedY(-b.getSpeedY());
@@ -329,6 +332,8 @@ public class WallBreaker extends Application {
     private List<Brick> bricks;
     private List<Level> levelSet;
     private int levelCounter;
+    private int points;
+    private Text pointsText, timeText;
     @Override
     public void start(Stage primaryStage) {
         stage=primaryStage;
@@ -353,7 +358,8 @@ public class WallBreaker extends Application {
         gameStats.setPrefHeight(WINDOW_HEIGHT);
         gameStats.setStyle("-fx-background-color: pink; -fx-border-width: 5; -fx-border-color: white");
         gameStats.getChildren().add(new Text("Poeni"));
-        gameStats.getChildren().add(new Text("0"));
+        pointsText=new Text("0");
+        gameStats.getChildren().add(pointsText);
         gameStats.getChildren().add(new Text("Vreme"));
         gameStats.getChildren().add(new Text("0:00:00"));
         gameStats.getChildren().add(new Text("Životi"));
@@ -377,12 +383,6 @@ public class WallBreaker extends Application {
         paddle.setTranslateX(WINDOW_WIDTH/2);
         //wrap playground and paddle into a new group
         //playground.getChildren().add(paddle);
-        /*bricks=new ArrayList<>();
-        for(int i=0;i<20;i++){
-            Brick b=new RectangleBrick(Math.random()*500, Math.random()*300, 30, 15, Color.RED);
-            bricks.add(b);
-            playground.getChildren().add(b);
-        }*/
         bricks=new ArrayList<>();
         for(Brick b:bricks) playground.getChildren().add(b);
         
@@ -653,6 +653,7 @@ public class WallBreaker extends Application {
 
     private void startGame(){
         levelCounter=0;
+        points=0;
         loadLevel(0);
         inGame=true;
     }
@@ -681,7 +682,9 @@ public class WallBreaker extends Application {
             mainMenu.toFront();
         }
     }
-    
+
+//showLevelResults() - with button to go to the next level or the end
+
     /**
      * @param args the command line arguments
      */
