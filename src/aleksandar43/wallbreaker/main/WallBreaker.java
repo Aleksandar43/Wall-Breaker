@@ -162,7 +162,7 @@ public class WallBreaker extends Application {
                             //one collision point
                             double xc = -B / (2 * A);
                             double yc = k * (xc - currentBallX) + currentBallY; //do I need this?
-                            if (Math.abs(xc - currentBallX) < minMovementX) {
+                            if (Math.abs(xc - currentBallX) < minMovementX && paddle.isInHittableRange(xc,yc)) {
                                 keepChecking = true;
                                 minMovementX = Math.abs(xc - currentBallX);
                                 hitByPaddle = true;
@@ -172,7 +172,7 @@ public class WallBreaker extends Application {
                             //two collision points
                             double xc1 = (-B + Math.sqrt(D)) / (2 * A);
                             double yc1 = k * (xc1 - currentBallX) + currentBallY;
-                            if (Math.abs(xc1 - currentBallX) < minMovementX) {
+                            if (Math.abs(xc1 - currentBallX) < minMovementX && paddle.isInHittableRange(xc1,yc1)) {
                                 keepChecking = true;
                                 minMovementX = Math.abs(xc1 - currentBallX);
                                 hitByPaddle = true;
@@ -180,7 +180,7 @@ public class WallBreaker extends Application {
                             }
                             double xc2 = (-B - Math.sqrt(D)) / (2 * A);
                             double yc2 = k * (xc2 - currentBallX) + currentBallY;
-                            if (Math.abs(xc2 - currentBallX) < minMovementX) {
+                            if (Math.abs(xc2 - currentBallX) < minMovementX && paddle.isInHittableRange(xc2,yc2)) {
                                 keepChecking = true;
                                 minMovementX = Math.abs(xc2 - currentBallX);
                                 hitByPaddle = true;
@@ -201,7 +201,7 @@ public class WallBreaker extends Application {
                         } else if (D == 0) {
                             //one collision point
                             double yc = -B / (2 * A);
-                            if (Math.abs(yc - currentBallY) < minMovementY) {
+                            if (Math.abs(yc - currentBallY) < minMovementY && paddle.isInHittableRange(b.getTranslateX(),yc)) {
                                 keepChecking = true;
                                 minMovementY = Math.abs(yc - currentBallY);
                                 hitByPaddle = true;
@@ -210,14 +210,14 @@ public class WallBreaker extends Application {
                         } else {
                             //two collision points
                             double yc1 = (-B + Math.sqrt(D)) / (2 * A);
-                            if (Math.abs(yc1 - currentBallY) < minMovementY) {
+                            if (Math.abs(yc1 - currentBallY) < minMovementY && paddle.isInHittableRange(b.getTranslateX(),yc1)) {
                                 keepChecking = true;
                                 minMovementY = Math.abs(yc1 - currentBallY);
                                 hitByPaddle = true;
                                 newAngle = (Math.atan2(yc1 - (paddle.getShape().getCenterY() + paddle.getTranslateY()) - 25, currentBallX - (paddle.getShape().getCenterX() + paddle.getTranslateX())));
                             }
                             double yc2 = (-B - Math.sqrt(D)) / (2 * A);
-                            if (Math.abs(yc2 - currentBallY) < minMovementY) {
+                            if (Math.abs(yc2 - currentBallY) < minMovementY && paddle.isInHittableRange(b.getTranslateX(),yc2)) {
                                 keepChecking = true;
                                 minMovementY = Math.abs(yc2 - currentBallY);
                                 hitByPaddle = true;
@@ -352,9 +352,9 @@ public class WallBreaker extends Application {
     private List<Brick> bricks;
     private List<Level> levelSet;
     private int levelCounter;
-    private int points;
+    private int points, lives;
     private long levelTime;
-    private Text pointsText, levelTimeText;
+    private Text pointsText, levelTimeText, livesText;
     @Override
     public void start(Stage primaryStage) {
         stage=primaryStage;
@@ -385,7 +385,8 @@ public class WallBreaker extends Application {
         levelTimeText=new Text("0:00:00");
         gameStats.getChildren().add(levelTimeText);
         gameStats.getChildren().add(new Text("Životi"));
-        gameStats.getChildren().add(new Text("0"));
+        livesText=new Text("0");
+        gameStats.getChildren().add(livesText);
         MenuText pause = new MenuText("Pauza"); //this may be unnecessary
         pause.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -687,6 +688,7 @@ public class WallBreaker extends Application {
     private void startGame(){
         levelCounter=0;
         points=0;
+        lives=3;
         loadLevel(0);
         inGame=true;
     }
