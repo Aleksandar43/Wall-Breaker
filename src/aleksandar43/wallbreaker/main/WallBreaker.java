@@ -92,6 +92,7 @@ public class WallBreaker extends Application {
                 levelTimeText.setText(s);
             }
             pointsText.setText(Integer.toString(points));
+            livesText.setText(Integer.toString(lives));
             if(bricks.size()==0) goToNextLevel(); //it should be showLevelResults() instead
             time=now;
         }
@@ -129,13 +130,16 @@ public class WallBreaker extends Application {
                     }
                 }
                 if(currentBallY+b.getRadius()+movementY>bounds.getMaxY()){
-                    //the ball should be lost here, but here is test check
-                    double moveByY=bounds.getMaxY()-b.getRadius()-currentBallY;
-                    if(moveByY<minMovementY){
-                        //hit is now guaranteed (but not by Y axis)
-                        keepChecking=true;
-                        minMovementY=moveByY;
+                    //the ball is lost
+                    lives--;
+                    //also play lost ball sound
+                    if(lives==0){
+                        //game over procedure - show game over, high scores
+                        mainMenu.toFront();
+                        return;
                     }
+                    ballLaunched=false;
+                    return;
                 }
                 if(currentBallY-b.getRadius()+movementY<bounds.getMinY()){
                     double moveByY=currentBallY-(bounds.getMinY()+b.getRadius());
@@ -716,6 +720,7 @@ public class WallBreaker extends Application {
             inGame=true;
         }
         else{ //yay, game finished
+            //end game procedure - high scores
             mainMenu.toFront();
         }
     }
