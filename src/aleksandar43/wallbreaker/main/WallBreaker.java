@@ -9,11 +9,15 @@ import aleksandar43.wallbreaker.game.RectangleBrick;
 import aleksandar43.wallbreaker.gui.HighScores;
 import aleksandar43.wallbreaker.gui.MenuText;
 import java.awt.AWTException;
+import java.awt.Desktop;
 import java.awt.MouseInfo;
 import java.awt.Robot;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -615,6 +619,18 @@ public class WallBreaker extends Application {
             }
         });
         pauseMenu.getChildren().add(goToOptionsPause);
+        MenuText help = new MenuText("Pomoć");
+        help.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                try {
+                    Desktop.getDesktop().open(new File("Funkcionalna specifikacija.docx"));
+                } catch (IOException ex) {
+                    System.err.println("Help cannot be opened\n"+ex.toString());
+                }
+            }
+        });
+        pauseMenu.getChildren().add(help);
         MenuText exitToMain = new MenuText("Izađi");
         exitToMain.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -660,6 +676,18 @@ public class WallBreaker extends Application {
             }
         });
         mainMenu.getChildren().add(goToHighScores);
+        MenuText help = new MenuText("Pomoć");
+        help.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                try {
+                    Desktop.getDesktop().open(new File("Funkcionalna specifikacija.docx"));
+                } catch (IOException ex) {
+                    System.err.println("Help cannot be opened\n"+ex.toString());
+                }
+            }
+        });
+        mainMenu.getChildren().add(help);
         MenuText goToAbout = new MenuText("O igri");
         goToAbout.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
