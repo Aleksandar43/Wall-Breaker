@@ -90,10 +90,10 @@ public class WallBreaker extends Application {
                 if(hundreds<=9) s+="0"+hundreds;
                 else s+=hundreds;
                 levelTimeText.setText(s);
+                pointsText.setText(Integer.toString(points));
+                livesText.setText(Integer.toString(lives));
+                if(bricks.size()==0) showLevelResults();
             }
-            pointsText.setText(Integer.toString(points));
-            livesText.setText(Integer.toString(lives));
-            if(bricks.size()==0) goToNextLevel(); //it should be showLevelResults() instead
             time=now;
         }
     }
@@ -341,7 +341,7 @@ public class WallBreaker extends Application {
     public static double FULLSCREEN_HEIGHT=Screen.getPrimary().getBounds().getHeight();
     private static double launchRadius=55+10;
     private static double launchAngle=Math.toRadians(-60);
-    private VBox mainMenu, optionsMenu, gameStats, pauseMenu;
+    private VBox mainMenu, optionsMenu, gameStats, pauseMenu, resultsMenu;
     private BorderPane aboutMenu, highScoresMenu, gamePane;
     private Group gameGroup;
     private Group playground;
@@ -359,6 +359,12 @@ public class WallBreaker extends Application {
     private int points, lives;
     private long levelTime;
     private Text pointsText, levelTimeText, livesText;
+    //time bonus - parabolic function
+    private static double bonusAtStart=500;
+    private static double bonusExpirationTime=180; //in seconds
+    private static double bonusC=bonusAtStart;
+    private static double bonusA=bonusC/(bonusExpirationTime*bonusExpirationTime);
+    private static double bonusB=-bonusA*(bonusExpirationTime*2);
     @Override
     public void start(Stage primaryStage) {
         stage=primaryStage;
@@ -375,6 +381,7 @@ public class WallBreaker extends Application {
         makeAboutMenu();
         makeHighScoresMenu();
         makePauseMenu();
+        makeResultsMenu();
         
         //make gameStats a Group
         gameStats=new VBox();
@@ -444,7 +451,7 @@ public class WallBreaker extends Application {
         makeMainMenu();
         
         menusStackPane = new Group();
-        menusStackPane.getChildren().addAll(optionsMenu,aboutMenu,highScoresMenu,gameGroup,pauseMenu,mainMenu);
+        menusStackPane.getChildren().addAll(resultsMenu,optionsMenu,aboutMenu,highScoresMenu,gameGroup,pauseMenu,mainMenu);
         Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -724,8 +731,47 @@ public class WallBreaker extends Application {
             mainMenu.toFront();
         }
     }
+    
+    private void makeResultsMenu() {
+        resultsMenu=new VBox();
+        resultsMenu.setAlignment(Pos.CENTER);
+        resultsMenu.setMaxWidth(WINDOW_WIDTH);
+        resultsMenu.setMaxHeight(WINDOW_HEIGHT);
+        resultsMenu.setPrefWidth(WINDOW_WIDTH);
+        resultsMenu.setPrefHeight(WINDOW_HEIGHT);
+        resultsMenu.setStyle("-fx-background-color: rgba(0,0,255,0.5); -fx-border-width: 5; -fx-border-color: white");
+        //update in showLevelResults()
+    }
 
-//showLevelResults() - with button to go to the next level or the end
+    private void showLevelResults(){
+        inGame=false;
+        resultsMenu.getChildren().clear();
+        String pointsSoFar="Osvojeno: "+points;
+        MenuText mt1=new MenuText(pointsSoFar);
+        //calculate bonus
+        int bonus;
+        if(levelTime<=bonusExpirationTime*1e9){
+            double seconds=levelTime/1e9;
+            bonus=(int)(bonusA*seconds*seconds+bonusB*seconds+bonusC);
+        }
+        else bonus=0;
+        String bonusString="Bonus: "+bonus;
+        MenuText mt2=new MenuText(bonusString);
+        points+=bonus;
+        String total="Ukupno: "+(points);
+        MenuText mt3=new MenuText(total);
+        MenuText empty=new MenuText("");
+        MenuText toNextLevel=new MenuText("Nastavi");
+        toNextLevel.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                goToNextLevel();
+                resultsMenu.toBack(); //does not when going to main menu
+            }
+        });
+        resultsMenu.getChildren().addAll(mt1,mt2,mt3,empty,toNextLevel);
+        resultsMenu.toFront();
+    }
 
     /**
      * @param args the command line arguments
