@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -346,7 +345,7 @@ public class WallBreaker extends Application {
     private static double launchRadius=55+10;
     private static double launchAngle=Math.toRadians(-60);
     private VBox mainMenu, optionsMenu, gameStats, pauseMenu, resultsMenu;
-    private BorderPane aboutMenu, highScoresMenu, gamePane;
+    private BorderPane aboutMenu, highScoresMenu;
     private Group gameGroup;
     private Group playground;
     private boolean musicOn=true, soundEffectsOn=true, inGame=false, paused=false, ballLaunched=false;
@@ -425,14 +424,7 @@ public class WallBreaker extends Application {
         //dummy brick to stop gameAnimationHandler to "go to next level" at the program start
         bricks.add(new Brick(""));
         for(Brick b:bricks) playground.getChildren().add(b);
-        
-        gamePane=new BorderPane();
-        gamePane.setMaxWidth(WINDOW_WIDTH);
-        gamePane.setMaxHeight(WINDOW_HEIGHT);
-        gamePane.setStyle("-fx-background-color: brown;");
-        gamePane.setRight(gameStats);
-        gamePane.setCenter(playground);
-        
+                
         gameGroup=new Group();
         gameGroup.getChildren().addAll(playground, paddle, gameStats);
         gameStats.setTranslateX(WINDOW_WIDTH-gameStats.getPrefWidth());
@@ -715,12 +707,12 @@ public class WallBreaker extends Application {
         Level level;
         level = new Level("Level 1");
         for(int i=0;i<6;i++)
-            level.getBricks().add(new RectangleBrick(i*50, 50, 30, 15, Color.YELLOW));
+            level.getBricks().add(new RectangleBrick(i*50, 50, Color.YELLOW));
         levelSet.add(level);
         //level 2
         level = new Level("Another level");
         for(int i=0;i<6;i++)
-            level.getBricks().add(new RectangleBrick(i*50, i*50, 30, 15, Color.ORANGE));
+            level.getBricks().add(new RectangleBrick(i*50, i*50, Color.ORANGE));
         levelSet.add(level);
     }
 
