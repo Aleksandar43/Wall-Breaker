@@ -17,13 +17,30 @@ public class RectangleBrick extends Brick{
     public static final double DEFAULT_HEIGHT=20;
     private static Image bricksImage;
     
-    public enum RectangleFill{
-        BRICK_RED(0,0,32,16),
-        BRICK_ORANGE(32,0,32,16),
-        BRICK_YELLOW(64,0,32,16);
+    public enum Fill{
+        RED(0,0,32,16),
+        ORANGE(32,0,32,16),
+        YELLOW(64,0,32,16),
+        GREEN(96,0,32,16),
+        BLUE(128,0,32,16),
+        PURPLE(0,16,32,16),
+        PINK(32,16,32,16),
+        TEAL(64,16,32,16),
+        CYAN(96,16,32,16),
+        CRIMSON(128,16,32,16),
+        GRAY(64,32,32,16),
+        DARKGREEN(0,48,32,16),
+        LIME(32,48,32,16),
+        DARKRED(64,48,32,16),
+        BROWN(96,48,32,16),
+        BRONZE(128,48,32,16),
+        SILVER(0,64,32,16),
+        GOLD(32,64,32,16),
+        SHINYBLACK(128,64,32,16),
+        ;
         
         private final double x,y,width,height;
-        private RectangleFill(double x, double y, double width, double height) {
+        private Fill(double x, double y, double width, double height) {
             this.x = x;
             this.y = y;
             this.width = width;
@@ -56,7 +73,7 @@ public class RectangleBrick extends Brick{
         this(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT, Color.BLACK);
     }
     
-    public RectangleBrick(double x, double y, double width, double height, RectangleFill fill){
+    public RectangleBrick(double x, double y, double width, double height, Fill fill){
         super("rectangle");
         ImageView z=new ImageView(bricksImage);
         z.setViewport(new Rectangle2D(fill.x, fill.y, fill.width, fill.height));
@@ -67,7 +84,7 @@ public class RectangleBrick extends Brick{
         getChildren().add(z);
     }
 
-    public RectangleBrick(double x, double y, RectangleFill fill){
+    public RectangleBrick(double x, double y, Fill fill){
         this(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT, fill);
     }
 

@@ -378,8 +378,6 @@ public class WallBreaker extends Application {
             System.err.println("Robot cannot be constructed, cursor cannot be stopped to go outside of game window");
         }
         
-        makeLevelSet();
-        
         makeOptionsMenu(primaryStage);
         makeAboutMenu();
         makeHighScoresMenu();
@@ -443,6 +441,8 @@ public class WallBreaker extends Application {
                 }
             }
         });
+        
+        makeLevelSet();
         
         makeMainMenu();
         
@@ -706,8 +706,12 @@ public class WallBreaker extends Application {
         //level 1
         Level level;
         level = new Level("Level 1");
-        for(int i=0;i<6;i++)
-            level.getBricks().add(new RectangleBrick(i*50, 50, RectangleBrick.RectangleFill.BRICK_YELLOW));
+        RectangleBrick.Fill[] fills={RectangleBrick.Fill.GRAY,RectangleBrick.Fill.PURPLE,RectangleBrick.Fill.BLUE,RectangleBrick.Fill.GREEN,RectangleBrick.Fill.YELLOW,RectangleBrick.Fill.RED};
+        for (int row=0;row<6;row++){
+            for (double col =(WINDOW_WIDTH-gameStats.getPrefWidth())/2-4*RectangleBrick.DEFAULT_WIDTH; col<(WINDOW_WIDTH-gameStats.getPrefWidth())/2+4*RectangleBrick.DEFAULT_WIDTH; col+=RectangleBrick.DEFAULT_WIDTH){
+                level.getBricks().add(new RectangleBrick(col, row*20+100, fills[row]));
+            }
+        }
         levelSet.add(level);
         //level 2
         level = new Level("Another level");
