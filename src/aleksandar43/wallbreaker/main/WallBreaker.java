@@ -707,7 +707,7 @@ public class WallBreaker extends Application {
         Level level;
         level = new Level("Level 1");
         for(int i=0;i<6;i++)
-            level.getBricks().add(new RectangleBrick(i*50, 50, Color.YELLOW));
+            level.getBricks().add(new RectangleBrick(i*50, 50, RectangleBrick.RectangleFill.BRICK_YELLOW));
         levelSet.add(level);
         //level 2
         level = new Level("Another level");
