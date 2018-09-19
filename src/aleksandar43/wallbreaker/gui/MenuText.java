@@ -12,19 +12,19 @@ import javafx.scene.text.Text;
  * @author Aleksandar
  */
 public class MenuText extends Text{
-    static Font x;
+    public static Font exoFont;
     static{
         try {
-            x = Font.loadFont(MenuText.class.getResource("Exo2-ExtraBold.otf").toExternalForm(), 36);
+            exoFont = Font.loadFont(MenuText.class.getResource("Exo2-ExtraBold.otf").toExternalForm(), 36);
         } catch (Exception e) {
-            x=Font.font(36);
+            exoFont=Font.font(36);
         }
-        System.out.println("Font: "+x);
+        System.out.println("Font: "+exoFont);
     }
     public MenuText(String text){
         super(text);
         setFill(Color.WHITE);
-        setFont(x);
+        setFont(exoFont);
         setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {

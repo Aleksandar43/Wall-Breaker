@@ -26,6 +26,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
@@ -137,8 +138,8 @@ public class WallBreaker extends Application {
                     lives--;
                     //also play lost ball sound
                     if(lives==0){
-                        //game over procedure - show game over, high scores
-                        mainMenu.toFront();
+                        inGame=false;
+                        gameFinished();
                         return;
                     }
                     ballLaunched=false;
@@ -344,7 +345,7 @@ public class WallBreaker extends Application {
     public static double FULLSCREEN_HEIGHT=Screen.getPrimary().getBounds().getHeight();
     private static double launchRadius=55+10;
     private static double launchAngle=Math.toRadians(-60);
-    private VBox mainMenu, optionsMenu, gameStats, pauseMenu, resultsMenu;
+    private VBox mainMenu, optionsMenu, gameStats, pauseMenu, resultsMenu, enterHighScoreMenu;
     private BorderPane aboutMenu, highScoresMenu;
     private Group gameGroup;
     private Group playground;
@@ -362,6 +363,7 @@ public class WallBreaker extends Application {
     private int points, lives;
     private long levelTime;
     private Text pointsText, levelTimeText, livesText;
+    private TextField playerNameTextField;
     //time bonus - parabolic function
     private static double bonusAtStart=500;
     private static double bonusExpirationTime=180; //in seconds
@@ -383,6 +385,7 @@ public class WallBreaker extends Application {
         makeHighScoresMenu();
         makePauseMenu();
         makeResultsMenu();
+        makeEnterHighScoreMenu();
         
         //make gameStats a Group
         gameStats=new VBox();
@@ -447,18 +450,20 @@ public class WallBreaker extends Application {
         makeMainMenu();
         
         menusStackPane = new Group();
-        menusStackPane.getChildren().addAll(resultsMenu,optionsMenu,aboutMenu,highScoresMenu,gameGroup,pauseMenu,mainMenu);
+        menusStackPane.getChildren().addAll(enterHighScoreMenu,resultsMenu,optionsMenu,aboutMenu,highScoresMenu,gameGroup,pauseMenu,mainMenu);
         Scene scene = new Scene(menusStackPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(inGame && event.getCode().equals(KeyCode.ESCAPE) && !paused){
-                    System.out.println("ESC key pressed");
-                    System.out.println("Scene x: "+scene.getX());
-                    System.out.println("Stage x: "+stage.getX());
-                    paused=true;
-                    pauseMenu.toFront();
+                if (isNodeInFront(gameGroup)) {
+                    if(inGame && event.getCode().equals(KeyCode.ESCAPE) && !paused){
+                        System.out.println("ESC key pressed");
+                        System.out.println("Scene x: "+scene.getX());
+                        System.out.println("Stage x: "+stage.getX());
+                        paused=true;
+                        pauseMenu.toFront();
+                    }
                 }
             }
         });
@@ -694,8 +699,6 @@ public class WallBreaker extends Application {
             @Override
             public void handle(MouseEvent event) {
                 System.out.println("BOOM");
-                //temporary, should be saved after a game
-                HighScores.saveHighScores();
                 Platform.exit();
             }
         });
@@ -751,8 +754,7 @@ public class WallBreaker extends Application {
             inGame=true;
         }
         else{ //yay, game finished
-            //end game procedure - high scores
-            mainMenu.toFront();
+            gameFinished();
         }
     }
     
@@ -790,13 +792,63 @@ public class WallBreaker extends Application {
             @Override
             public void handle(MouseEvent event) {
                 goToNextLevel();
-                resultsMenu.toBack(); //does not when going to main menu
+                resultsMenu.toBack();
             }
         });
         resultsMenu.getChildren().addAll(mt1,mt2,mt3,empty,toNextLevel);
         resultsMenu.toFront();
     }
+    
+    private void makeEnterHighScoreMenu(){
+        enterHighScoreMenu=new VBox();
+        enterHighScoreMenu.setAlignment(Pos.CENTER);
+        enterHighScoreMenu.setMaxWidth(WINDOW_WIDTH);
+        enterHighScoreMenu.setMaxHeight(WINDOW_HEIGHT);
+        enterHighScoreMenu.setPrefWidth(WINDOW_WIDTH);
+        enterHighScoreMenu.setPrefHeight(WINDOW_HEIGHT);
+        enterHighScoreMenu.setStyle("-fx-background-color: rgba(0,0,255,0.5); -fx-border-width: 5; -fx-border-color: white");
+        MenuText mt1=new MenuText("Bravo!");
+        enterHighScoreMenu.getChildren().add(mt1);
+        MenuText mt2=new MenuText("Imaš jedan od najboljih rezultata! Unesi ime:");
+        enterHighScoreMenu.getChildren().add(mt2);
+        playerNameTextField=new TextField();
+        playerNameTextField.setFont(MenuText.exoFont);
+        playerNameTextField.setPrefColumnCount(20);
+        enterHighScoreMenu.getChildren().add(playerNameTextField);
+        MenuText goToHighScores=new MenuText("Nastavi");
+        goToHighScores.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                HighScores.addHighScore(playerNameTextField.getText(), points);
+                updateHighScoresMenu();
+                highScoresMenu.toFront();
+                playerNameTextField.setText("");
+            }
+        });
+        enterHighScoreMenu.getChildren().add(goToHighScores);
+    }
 
+    private void gameFinished(){
+        if(HighScores.isInHighScores(points)){
+            enterHighScoreMenu.toFront();
+        }else{
+            highScoresMenu.toFront();
+        }
+    }
+
+    private void updateHighScoresMenu(){
+        VBox scores=new VBox();
+        List<Pair<String, Integer>> highScores = HighScores.getHighScores();
+        for(Pair<String, Integer> p:highScores){
+            scores.getChildren().add(new MenuText(p.getKey()+" "+p.getValue()));
+        }
+        highScoresMenu.setCenter(scores);
+    }
+
+    private boolean isNodeInFront(Node node){
+        return menusStackPane.getChildren().get(menusStackPane.getChildren().size()-1)==node;
+    }
+    
     /**
      * @param args the command line arguments
      */

@@ -21,10 +21,17 @@ public class HighScores {
     
     static{
         defaultHighScores=new ArrayList<>(10);
-        defaultHighScores.add(new Pair<>("Mika", 100));
-        defaultHighScores.add(new Pair<>("Rika", 90));
-        defaultHighScores.add(new Pair<>("Lika", 80));
-        defaultHighScores.add(new Pair<>("Dika", 70));
+        defaultHighScores.add(new Pair<>("Mika", 10));
+        defaultHighScores.add(new Pair<>("Rika", 9));
+        defaultHighScores.add(new Pair<>("Lika", 8));
+        defaultHighScores.add(new Pair<>("Dika", 7));
+        defaultHighScores.add(new Pair<>("Dika33", 6));
+        defaultHighScores.add(new Pair<>("Dika444", 5));
+        defaultHighScores.add(new Pair<>("Dika5555", 4));
+        defaultHighScores.add(new Pair<>("Player30", 3));
+        defaultHighScores.add(new Pair<>("Cane", 2));
+        //problems with font size
+        //defaultHighScores.add(new Pair<>("Bane", 10));
     }
     
     public static List<Pair<String, Integer>> getHighScores(){
@@ -49,8 +56,18 @@ public class HighScores {
         return scores;
     }
     
-    public static void addHighScore(){
-        
+    public static boolean isInHighScores(int points){
+        return points>scores.get(scores.size()-1).getValue();
+    }
+    
+    public static void addHighScore(String name, int points){
+        int i=0;
+        while(scores.get(i).getValue()>=points && i<scores.size()) i++;
+        if(i<scores.size()){
+            scores.remove(scores.size()-1);
+            scores.add(i, new Pair<>(name, points));
+            saveHighScores();
+        }
     }
     
     public static void saveHighScores(){
