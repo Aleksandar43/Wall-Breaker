@@ -4,6 +4,7 @@ package aleksandar43.wallbreaker.gui;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -13,6 +14,9 @@ import javafx.scene.text.Text;
  */
 public class MenuText extends Text{
     public static Font exoFont;
+    public static Color DEFAULT_NORMAL=Color.WHITE;
+    public static Color DEFAULT_HOVER=Color.PURPLE;
+
     static{
         try {
             exoFont = Font.loadFont(MenuText.class.getResource("Exo2-ExtraBold.otf").toExternalForm(), 36);
@@ -21,20 +25,21 @@ public class MenuText extends Text{
         }
         System.out.println("Font: "+exoFont);
     }
-    public MenuText(String text){
+
+    public MenuText(String text, Paint normalPaint, Paint hoverPaint){
         super(text);
-        setFill(Color.WHITE);
+        setFill(normalPaint);
         setFont(exoFont);
         setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                setFill(Color.PURPLE);
+                setFill(hoverPaint);
             }
         });
         setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                setFill(Color.WHITE);
+                setFill(normalPaint);
             }
         });
         //default if nothing else is put as event handler
@@ -44,5 +49,9 @@ public class MenuText extends Text{
                 System.out.println("You clicked on "+text+"!");
             }
         });
+    }
+
+    public MenuText(String text){
+        this(text, DEFAULT_NORMAL, DEFAULT_HOVER);
     }
 }

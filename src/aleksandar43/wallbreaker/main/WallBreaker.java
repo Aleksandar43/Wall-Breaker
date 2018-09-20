@@ -387,20 +387,19 @@ public class WallBreaker extends Application {
         makeResultsMenu();
         makeEnterHighScoreMenu();
         
-        //make gameStats a Group
         gameStats=new VBox();
         gameStats.setAlignment(Pos.TOP_RIGHT);
         gameStats.setPrefWidth(250);
         gameStats.setPrefHeight(WINDOW_HEIGHT);
         gameStats.setStyle("-fx-background-color: pink; -fx-border-width: 5; -fx-border-color: white");
-        gameStats.getChildren().add(new Text("Poeni"));
-        pointsText=new Text("0");
+        gameStats.getChildren().add(new MenuText("Poeni", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL));
+        pointsText=new MenuText("0", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL);
         gameStats.getChildren().add(pointsText);
-        gameStats.getChildren().add(new Text("Vreme"));
-        levelTimeText=new Text("0:00:00");
+        gameStats.getChildren().add(new MenuText("Vreme", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL));
+        levelTimeText=new MenuText("0:00:00", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL);
         gameStats.getChildren().add(levelTimeText);
-        gameStats.getChildren().add(new Text("Životi"));
-        livesText=new Text("0");
+        gameStats.getChildren().add(new MenuText("Životi", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL));
+        livesText=new MenuText("0", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL);
         gameStats.getChildren().add(livesText);
         MenuText pause = new MenuText("Pauza"); //this may be unnecessary
         pause.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -583,12 +582,7 @@ public class WallBreaker extends Application {
         });
         highScoresMenu.setBottom(backToMainHighScores);
         BorderPane.setAlignment(backToMainHighScores, Pos.CENTER);
-        VBox scores=new VBox();
-        List<Pair<String, Integer>> highScores = HighScores.getHighScores();
-        for(Pair<String, Integer> p:highScores){
-            scores.getChildren().add(new MenuText(p.getKey()+" "+p.getValue()));
-        }
-        highScoresMenu.setCenter(scores);
+        updateHighScoresMenu();
     }
 
     private void makePauseMenu() {
@@ -807,9 +801,9 @@ public class WallBreaker extends Application {
         enterHighScoreMenu.setPrefWidth(WINDOW_WIDTH);
         enterHighScoreMenu.setPrefHeight(WINDOW_HEIGHT);
         enterHighScoreMenu.setStyle("-fx-background-color: rgba(0,0,255,0.5); -fx-border-width: 5; -fx-border-color: white");
-        MenuText mt1=new MenuText("Bravo!");
+        MenuText mt1=new MenuText("Bravo!", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL);
         enterHighScoreMenu.getChildren().add(mt1);
-        MenuText mt2=new MenuText("Imaš jedan od najboljih rezultata! Unesi ime:");
+        MenuText mt2=new MenuText("Imaš jedan od najboljih rezultata! Unesi ime:", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL);
         enterHighScoreMenu.getChildren().add(mt2);
         playerNameTextField=new TextField();
         playerNameTextField.setFont(MenuText.exoFont);
@@ -840,7 +834,7 @@ public class WallBreaker extends Application {
         VBox scores=new VBox();
         List<Pair<String, Integer>> highScores = HighScores.getHighScores();
         for(Pair<String, Integer> p:highScores){
-            scores.getChildren().add(new MenuText(p.getKey()+" "+p.getValue()));
+            scores.getChildren().add(new MenuText(p.getKey()+" "+p.getValue(), MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL));
         }
         highScoresMenu.setCenter(scores);
     }
