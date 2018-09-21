@@ -28,6 +28,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -463,6 +464,12 @@ public class WallBreaker extends Application {
         });
         aboutMenu.setBottom(backToMainAbout);
         BorderPane.setAlignment(backToMainAbout, Pos.CENTER);
+        TextArea textArea=new TextArea("Napravio:\nAleksandar Plahćinski\n\n"
+            +"Dizajn cigli:\nJohn B. Marine, paket \"Block Breaking Block Pack(HD)\"\nhttps://opengameart.org/content/block-breaking-block-pack-hd");
+        textArea.setWrapText(true);
+        textArea.setEditable(false);
+        textArea.setStyle("-fx-control-inner-background: darkblue; -fx-text-fill: white");
+        aboutMenu.setCenter(textArea);
     }
 
     private void makeHighScoresMenu() {
