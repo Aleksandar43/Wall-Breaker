@@ -19,9 +19,9 @@ public class MenuText extends Text{
 
     static{
         try {
-            exoFont = Font.loadFont(MenuText.class.getResource("Exo2-ExtraBold.otf").toExternalForm(), 36);
+            exoFont = Font.loadFont(MenuText.class.getResource("Exo2-ExtraBold.otf").toExternalForm(), 32);
         } catch (Exception e) {
-            exoFont=Font.font(36);
+            exoFont=Font.font(32);
         }
         System.out.println("Font: "+exoFont);
     }

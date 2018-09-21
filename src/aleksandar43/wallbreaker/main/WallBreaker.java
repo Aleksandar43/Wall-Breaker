@@ -330,8 +330,6 @@ public class WallBreaker extends Application {
         paddle=new Paddle();
         paddle.setTranslateY(WINDOW_HEIGHT);
         paddle.setTranslateX(WINDOW_WIDTH/2);
-        //wrap playground and paddle into a new group
-        //playground.getChildren().add(paddle);
         bricks=new ArrayList<>();
         //dummy brick to stop gameAnimationHandler to "go to next level" at the program start
         bricks.add(new Brick(""));
@@ -596,8 +594,22 @@ public class WallBreaker extends Application {
         levelSet.add(level);
         //level 2
         level = new Level("Another level");
-        for(int i=0;i<6;i++)
-            level.getBricks().add(new RectangleBrick(i*50, i*50, Color.ORANGE));
+        for(int i=0;i<5;i++)
+            for(int j=0;j<=i;j++)
+                level.getBricks().add(new RectangleBrick(i*50, j*50, RectangleBrick.Fill.ORANGE));
+        for(int i=0;i<5;i++)
+            for(int j=0;j<=i;j++)
+                level.getBricks().add(new RectangleBrick((WINDOW_WIDTH-gameStats.getPrefWidth())-i*50-40, j*50, RectangleBrick.Fill.CYAN));
+        level.getBricks().add(new RectangleBrick((WINDOW_WIDTH-gameStats.getPrefWidth())/2-25, 300, RectangleBrick.Fill.LIME));
+        levelSet.add(level);
+        //level 3
+        level = new Level("Slopes");
+        for(int i=0;i<5;i++){
+            level.getBricks().add(new RectangleBrick(i*40, i*20+120, RectangleBrick.Fill.CRIMSON));
+            level.getBricks().add(new RectangleBrick(i*40+40, i*20+120, RectangleBrick.Fill.CRIMSON));
+            level.getBricks().add(new RectangleBrick((WINDOW_WIDTH-gameStats.getPrefWidth())-40*(5-i), i*20+120, RectangleBrick.Fill.DARKGREEN));
+            level.getBricks().add(new RectangleBrick((WINDOW_WIDTH-gameStats.getPrefWidth())-40*(6-i), i*20+120, RectangleBrick.Fill.DARKGREEN));
+        }
         levelSet.add(level);
     }
 
@@ -644,7 +656,7 @@ public class WallBreaker extends Application {
         inGame=false;
         resultsMenu.getChildren().clear();
         String pointsSoFar="Osvojeno: "+points;
-        MenuText mt1=new MenuText(pointsSoFar);
+        MenuText mt1=new MenuText(pointsSoFar, MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL);
         //calculate bonus
         int bonus;
         if(levelTime<=bonusExpirationTime*1e9){
@@ -653,10 +665,10 @@ public class WallBreaker extends Application {
         }
         else bonus=0;
         String bonusString="Bonus: "+bonus;
-        MenuText mt2=new MenuText(bonusString);
+        MenuText mt2=new MenuText(bonusString, MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL);
         points+=bonus;
         String total="Ukupno: "+(points);
-        MenuText mt3=new MenuText(total);
+        MenuText mt3=new MenuText(total, MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL);
         MenuText empty=new MenuText("");
         MenuText toNextLevel=new MenuText("Nastavi");
         toNextLevel.setOnMouseClicked(new EventHandler<MouseEvent>() {

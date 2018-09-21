@@ -25,13 +25,12 @@ public class HighScores {
         defaultHighScores.add(new Pair<>("Rika", 9));
         defaultHighScores.add(new Pair<>("Lika", 8));
         defaultHighScores.add(new Pair<>("Dika", 7));
-        defaultHighScores.add(new Pair<>("Dika33", 6));
-        defaultHighScores.add(new Pair<>("Dika444", 5));
-        defaultHighScores.add(new Pair<>("Dika5555", 4));
-        defaultHighScores.add(new Pair<>("Player30", 3));
+        defaultHighScores.add(new Pair<>("Žika 33", 6));
+        defaultHighScores.add(new Pair<>("Laza444", 5));
+        defaultHighScores.add(new Pair<>("Maza5555", 4));
+        defaultHighScores.add(new Pair<>("Amater", 3));
         defaultHighScores.add(new Pair<>("Cane", 2));
-        //problems with font size
-        //defaultHighScores.add(new Pair<>("Bane", 10));
+        defaultHighScores.add(new Pair<>("Bane", 1));
     }
     
     public static List<Pair<String, Integer>> getHighScores(){
