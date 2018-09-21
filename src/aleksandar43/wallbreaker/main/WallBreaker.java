@@ -7,6 +7,7 @@ import aleksandar43.wallbreaker.game.Level;
 import aleksandar43.wallbreaker.game.Paddle;
 import aleksandar43.wallbreaker.game.RectangleBrick;
 import aleksandar43.wallbreaker.gui.HighScores;
+import aleksandar43.wallbreaker.gui.MenuBorderPane;
 import aleksandar43.wallbreaker.gui.MenuText;
 import aleksandar43.wallbreaker.gui.MenuVBox;
 import java.awt.AWTException;
@@ -267,7 +268,7 @@ public class WallBreaker extends Application {
     private static double launchRadius=55+10;
     private static double launchAngle=Math.toRadians(-60);
     private MenuVBox mainMenu, optionsMenu, gameStats, pauseMenu, resultsMenu, enterHighScoreMenu;
-    private BorderPane aboutMenu, highScoresMenu;
+    private MenuBorderPane aboutMenu, highScoresMenu;
     private Group gameGroup;
     private Group playground;
     private boolean musicOn=true, soundEffectsOn=true, inGame=false, paused=false, ballLaunched=false;
@@ -454,12 +455,7 @@ public class WallBreaker extends Application {
     }
 
     private void makeAboutMenu() {
-        aboutMenu=new BorderPane();
-        aboutMenu.setStyle("-fx-background-color: black; -fx-border-width: 1; -fx-border-color: grey");
-        aboutMenu.setMaxWidth(WINDOW_WIDTH);
-        aboutMenu.setMaxHeight(WINDOW_HEIGHT);
-        aboutMenu.setPrefWidth(WINDOW_WIDTH);
-        aboutMenu.setPrefHeight(WINDOW_HEIGHT);
+        aboutMenu=new MenuBorderPane(MenuBorderPane.STYLE_STANDARD);
         MenuText backToMainAbout=new MenuText("Nazad");
         backToMainAbout.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -472,12 +468,7 @@ public class WallBreaker extends Application {
     }
 
     private void makeHighScoresMenu() {
-        highScoresMenu=new BorderPane();
-        highScoresMenu.setMaxWidth(WINDOW_WIDTH);
-        highScoresMenu.setMaxHeight(WINDOW_HEIGHT);
-        highScoresMenu.setPrefWidth(WINDOW_WIDTH);
-        highScoresMenu.setPrefHeight(WINDOW_HEIGHT);
-        highScoresMenu.setStyle("-fx-background-color: darkgreen; -fx-border-width: 5; -fx-border-color: yellow");
+        highScoresMenu=new MenuBorderPane(MenuBorderPane.STYLE_STANDARD);
         MenuText backToMainHighScores=new MenuText("Nazad");
         backToMainHighScores.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
