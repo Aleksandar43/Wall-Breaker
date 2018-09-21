@@ -227,16 +227,10 @@ public class WallBreaker extends Application {
                 Brick brick=it.next();
                 Shape intersection=Shape.intersect(b.getShape(), brick.getShape());
                 if(intersection.getBoundsInLocal().getWidth() != -1){
-                    System.out.println("Intersection: "+intersection);
                     it.remove();
                     playground.getChildren().remove(brick);
                     points+=5;
-                    Bounds lBounds;
-                    if (!stage.isFullScreen()) {
-                        lBounds = intersection.getBoundsInLocal();
-                    }else{
-                        lBounds=new BoundingBox(intersection.getBoundsInLocal().getMinX(), intersection.getBoundsInLocal().getMinY(), intersection.getBoundsInLocal().getWidth()*FULLSCREEN_WIDTH/WINDOW_WIDTH, intersection.getBoundsInLocal().getHeight()*FULLSCREEN_HEIGHT/WINDOW_HEIGHT);
-                    }
+                    Bounds lBounds=intersection.getBoundsInLocal();
                     if (lBounds.getWidth() < lBounds.getHeight()) {
                         negateSpeedX = true;
                         if(b.getSpeedX()>0){

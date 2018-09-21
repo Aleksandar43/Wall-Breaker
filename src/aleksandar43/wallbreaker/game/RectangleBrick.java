@@ -82,7 +82,11 @@ public class RectangleBrick extends Brick{
         z.setFitWidth(width);
         z.setFitHeight(height);
         getChildren().add(z);
-        rectangle=new Rectangle(x, y, width, height); //for getShape()
+        //for getShape()
+        rectangle=new Rectangle(width, height);
+        rectangle.setTranslateX(x);
+        rectangle.setTranslateY(y);
+        getChildren().add(0,rectangle);
     }
 
     public RectangleBrick(double x, double y, Fill fill){
