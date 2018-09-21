@@ -428,11 +428,11 @@ public class WallBreaker extends Application {
             public void handle(MouseEvent event) {
                 if(primaryStage.isFullScreen()){
                     primaryStage.setFullScreen(false);
-                    fullscreenToggle.setText("Pređi na ceo ekran".toUpperCase());
+                    fullscreenToggle.setText("Pređi na ceo ekran");
                     menusStackPane.getTransforms().clear();
                 } else{
                     primaryStage.setFullScreen(true);
-                    fullscreenToggle.setText("Pređi na prozor".toUpperCase());
+                    fullscreenToggle.setText("Pređi na prozor");
                     menusStackPane.getTransforms().addAll(
                             new Scale(FULLSCREEN_WIDTH/WINDOW_WIDTH, FULLSCREEN_HEIGHT/WINDOW_HEIGHT, 0, 0)
                     );
