@@ -8,6 +8,7 @@ import aleksandar43.wallbreaker.game.Paddle;
 import aleksandar43.wallbreaker.game.RectangleBrick;
 import aleksandar43.wallbreaker.gui.HighScores;
 import aleksandar43.wallbreaker.gui.MenuText;
+import aleksandar43.wallbreaker.gui.MenuVBox;
 import java.awt.AWTException;
 import java.awt.Desktop;
 import java.awt.MouseInfo;
@@ -21,7 +22,6 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
-import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -266,7 +266,7 @@ public class WallBreaker extends Application {
     public static double FULLSCREEN_HEIGHT=Screen.getPrimary().getBounds().getHeight();
     private static double launchRadius=55+10;
     private static double launchAngle=Math.toRadians(-60);
-    private VBox mainMenu, optionsMenu, gameStats, pauseMenu, resultsMenu, enterHighScoreMenu;
+    private MenuVBox mainMenu, optionsMenu, gameStats, pauseMenu, resultsMenu, enterHighScoreMenu;
     private BorderPane aboutMenu, highScoresMenu;
     private Group gameGroup;
     private Group playground;
@@ -308,11 +308,10 @@ public class WallBreaker extends Application {
         makeResultsMenu();
         makeEnterHighScoreMenu();
         
-        gameStats=new VBox();
+        gameStats=new MenuVBox(MenuVBox.STYLE_STANDARD);
         gameStats.setAlignment(Pos.TOP_RIGHT);
         gameStats.setPrefWidth(250);
         gameStats.setPrefHeight(WINDOW_HEIGHT);
-        gameStats.setStyle("-fx-background-color: pink; -fx-border-width: 5; -fx-border-color: white");
         gameStats.getChildren().add(new MenuText("Poeni", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL));
         pointsText=new MenuText("0", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL);
         gameStats.getChildren().add(pointsText);
@@ -322,15 +321,6 @@ public class WallBreaker extends Application {
         gameStats.getChildren().add(new MenuText("Životi", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL));
         livesText=new MenuText("0", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL);
         gameStats.getChildren().add(livesText);
-        MenuText pause = new MenuText("Pauza"); //this may be unnecessary
-        pause.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                paused=true;
-                pauseMenu.toFront();
-            }
-        });
-        gameStats.getChildren().add(pause);
         
         playground=new Group();
         Rectangle temp=new Rectangle(0, 0, WINDOW_WIDTH-gameStats.getPrefWidth(), WINDOW_HEIGHT);
@@ -403,13 +393,7 @@ public class WallBreaker extends Application {
     }
 
     private void makeOptionsMenu(Stage primaryStage) {
-        optionsMenu=new VBox();
-        optionsMenu.setAlignment(Pos.CENTER);
-        optionsMenu.setMaxWidth(WINDOW_WIDTH);
-        optionsMenu.setMaxHeight(WINDOW_HEIGHT);
-        optionsMenu.setPrefWidth(WINDOW_WIDTH);
-        optionsMenu.setPrefHeight(WINDOW_HEIGHT);
-        optionsMenu.setStyle("-fx-background-color: black;-fx-border-color: red; -fx-border-width: 5");
+        optionsMenu=new MenuVBox(MenuVBox.STYLE_STANDARD);
         MenuText musicToggle=new MenuText("Muzika: uklj.");
         musicToggle.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -507,13 +491,7 @@ public class WallBreaker extends Application {
     }
 
     private void makePauseMenu() {
-        pauseMenu=new VBox();
-        pauseMenu.setAlignment(Pos.CENTER);
-        pauseMenu.setMaxWidth(WINDOW_WIDTH);
-        pauseMenu.setMaxHeight(WINDOW_HEIGHT);
-        pauseMenu.setPrefWidth(WINDOW_WIDTH);
-        pauseMenu.setPrefHeight(WINDOW_HEIGHT);
-        pauseMenu.setStyle("-fx-background-color: rgba(0,0,255,0.5); -fx-border-width: 5; -fx-border-color: white");
+        pauseMenu=new MenuVBox(MenuVBox.STYLE_PAUSE);
         MenuText backtoGame = new MenuText("Nastavi");
         backtoGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -556,13 +534,7 @@ public class WallBreaker extends Application {
     }
 
     private void makeMainMenu() {
-        mainMenu=new VBox();
-        mainMenu.setAlignment(Pos.CENTER);
-        mainMenu.setMaxWidth(WINDOW_WIDTH);
-        mainMenu.setMaxHeight(WINDOW_HEIGHT);
-        mainMenu.setPrefWidth(WINDOW_WIDTH);
-        mainMenu.setPrefHeight(WINDOW_HEIGHT);
-        mainMenu.setStyle("-fx-background-color: darkblue; -fx-border-width: 5; -fx-border-color: yellow");
+        mainMenu=new MenuVBox(MenuVBox.STYLE_STANDARD);
         MenuText startGame = new MenuText("Pokreni igru");
         startGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -658,7 +630,6 @@ public class WallBreaker extends Application {
             bricks.add(b);
             playground.getChildren().add(b);
         }
-        //also bring back ball to the paddle
     }
     
     private void goToNextLevel(){
@@ -674,14 +645,8 @@ public class WallBreaker extends Application {
     }
     
     private void makeResultsMenu() {
-        resultsMenu=new VBox();
-        resultsMenu.setAlignment(Pos.CENTER);
-        resultsMenu.setMaxWidth(WINDOW_WIDTH);
-        resultsMenu.setMaxHeight(WINDOW_HEIGHT);
-        resultsMenu.setPrefWidth(WINDOW_WIDTH);
-        resultsMenu.setPrefHeight(WINDOW_HEIGHT);
-        resultsMenu.setStyle("-fx-background-color: rgba(0,0,255,0.5); -fx-border-width: 5; -fx-border-color: white");
-        //update in showLevelResults()
+        resultsMenu=new MenuVBox(MenuVBox.STYLE_PAUSE);
+        //update contents in showLevelResults()
     }
 
     private void showLevelResults(){
@@ -715,13 +680,7 @@ public class WallBreaker extends Application {
     }
     
     private void makeEnterHighScoreMenu(){
-        enterHighScoreMenu=new VBox();
-        enterHighScoreMenu.setAlignment(Pos.CENTER);
-        enterHighScoreMenu.setMaxWidth(WINDOW_WIDTH);
-        enterHighScoreMenu.setMaxHeight(WINDOW_HEIGHT);
-        enterHighScoreMenu.setPrefWidth(WINDOW_WIDTH);
-        enterHighScoreMenu.setPrefHeight(WINDOW_HEIGHT);
-        enterHighScoreMenu.setStyle("-fx-background-color: rgba(0,0,255,0.5); -fx-border-width: 5; -fx-border-color: white");
+        enterHighScoreMenu=new MenuVBox(MenuVBox.STYLE_PAUSE);
         MenuText mt1=new MenuText("Bravo!", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL);
         enterHighScoreMenu.getChildren().add(mt1);
         MenuText mt2=new MenuText("Imaš jedan od najboljih rezultata! Unesi ime:", MenuText.DEFAULT_NORMAL, MenuText.DEFAULT_NORMAL);
